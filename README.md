@@ -1,13 +1,13 @@
 tinyspring
 ==========
-###TinySpring is designed to be a set of tools for Spring projects.It began when I wished to write a practical generic DAO class for my spring-mvc project.
+###TinySpring is designed to be a set of tools for Spring-JPA projects.It began when I wished to write a practical generic DAO class for my spring-mvc project.
 ###For now TinySpring contains three parts:
 
 * a generic DAO class with helper method to access database more easily.
 
 * some model class to help organize view objects.
 
-* some utility methods missing from the common libraries (or I just don't know of, in this case inform me ;] ).
+* some utility methods missing from the common libraries (or I just don't know of, in this case please inform me ;] ).
 
 
 # Usage
