@@ -15,11 +15,8 @@ import java.util.Date;
  * User: Sebastian MA
  * Date: June 22, 2014
  * Time: 23:17
- * <p>
+ * <p/>
  * DateTimeUtils using JodaTime library
- *
- * @author tian
- * @version $Id: $Id
  */
 public class DateTimeUtils {
 
@@ -31,9 +28,8 @@ public class DateTimeUtils {
 	 * formats date to HH:mm
 	 *
 	 * @param date
-	 * 		a {@link java.util.Date} object.
 	 *
-	 * @return a {@link java.lang.String} object.
+	 * @return
 	 */
 	public static String toHHmm(Date date) {
 
@@ -41,26 +37,15 @@ public class DateTimeUtils {
 	}
 
 	/**
-	 * <p>toDateString.</p>
-	 *
 	 * @param date
-	 * 		a {@link java.util.Date} object.
 	 *
-	 * @return a {@link java.lang.String} object.
+	 * @return
 	 */
 	public static String toDateString(Date date) {
 
 		return dateFormatter.format(date);
 	}
 
-	/**
-	 * <p>toTimestamp.</p>
-	 *
-	 * @param dateString
-	 * 		a {@link java.lang.String} object.
-	 *
-	 * @return a {@link java.sql.Timestamp} object.
-	 */
 	public static Timestamp toTimestamp(String dateString) {
 
 		try {
@@ -72,18 +57,19 @@ public class DateTimeUtils {
 	}
 
 	/**
-	 * a offset equals to zero means same day as the given time.a offset less than zero
+	 * returns a timestamp representing the given date at 00:00:00.<br>
+	 * A offset equals to zero means same day as the given time. A offset less than zero
 	 * means [offset] days before the given time. a offset greater than zero means
-	 * [offset] days after the given time.<br>
+	 * [offset] days after the given time.
 	 *
 	 * @param time
-	 * 		a {@link java.util.Date} object.
+	 * 		a certain time
 	 * @param offset
 	 * 		offset in days.
 	 *
-	 * @return a {@link java.util.Date} object.
+	 * @return
 	 */
-	public static Date toStartOfDay(Date time, int offset) {
+	public static Date beginOfDay(Date time, int offset) {
 
 		DateTime jodaTime = new DateTime(time.getTime());
 		jodaTime = jodaTime
@@ -96,16 +82,43 @@ public class DateTimeUtils {
 	}
 
 	/**
-	 * <p>toEndOfDay.</p>
+	 * returns a timestamp representing the given date at 00:00:00
 	 *
 	 * @param time
-	 * 		a {@link java.util.Date} object.
-	 * @param offset
-	 * 		a int.
+	 * 		a certain time
 	 *
-	 * @return a {@link java.util.Date} object.
+	 * @return the specific date
 	 */
-	public static Date toEndOfDay(Date time, int offset) {
+	public static Date beginOfDay(Date time) {
+
+		DateTime jodaTime = new DateTime(time.getTime());
+		jodaTime = jodaTime
+				.hourOfDay().withMinimumValue()
+				.minuteOfHour().withMinimumValue()
+				.secondOfMinute().withMinimumValue();
+
+		jodaTime = jodaTime.plusDays(0);
+		return new Date(jodaTime.getMillis());
+	}
+
+	/**
+	 * returns a date representing today at 00:00:00
+	 *
+	 * @return the specific date
+	 */
+	public static Date beginOfDay() {
+
+		DateTime jodaTime = new DateTime(System.currentTimeMillis());
+		jodaTime = jodaTime
+				.hourOfDay().withMinimumValue()
+				.minuteOfHour().withMinimumValue()
+				.secondOfMinute().withMinimumValue();
+
+		jodaTime = jodaTime.plusDays(0);
+		return new Date(jodaTime.getMillis());
+	}
+
+	public static Date endOfDay(Date time, int offset) {
 
 		DateTime jodaTime = new DateTime(time.getTime());
 		jodaTime = jodaTime
@@ -116,19 +129,7 @@ public class DateTimeUtils {
 		return new Date(jodaTime.getMillis());
 	}
 
-	/**
-	 * <p>toStartOfMonth.</p>
-	 *
-	 * @param year
-	 * 		a int.
-	 * @param month
-	 * 		a int.
-	 * @param offset
-	 * 		a int.
-	 *
-	 * @return a {@link java.util.Date} object.
-	 */
-	public static Date toStartOfMonth(int year, int month, int offset) {
+	public static Date beginOfMonth(int year, int month, int offset) {
 
 		return new MutableDateTime()
 				.year().set(year)
@@ -143,19 +144,7 @@ public class DateTimeUtils {
 				.toDate();
 	}
 
-	/**
-	 * <p>toEndOfMonth.</p>
-	 *
-	 * @param year
-	 * 		a int.
-	 * @param month
-	 * 		a int.
-	 * @param offset
-	 * 		a int.
-	 *
-	 * @return a {@link java.util.Date} object.
-	 */
-	public static Date toEndOfMonth(int year, int month, int offset) {
+	public static Date endOfMonth(int year, int month, int offset) {
 
 		return new MutableDateTime()
 				.year().set(year)
@@ -170,11 +159,6 @@ public class DateTimeUtils {
 				.toDate();
 	}
 
-	/**
-	 * <p>now.</p>
-	 *
-	 * @return a {@link java.sql.Timestamp} object.
-	 */
 	public static Timestamp now() {
 
 		return new Timestamp(System.currentTimeMillis());
