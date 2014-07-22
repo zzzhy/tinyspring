@@ -7,6 +7,9 @@ import org.apache.commons.lang3.StringUtils;
  * User: tian
  * Date: 14/2/14
  * Time: 15:19
+ *
+ * @author tian
+ * @version $Id: $Id
  */
 public class Validator {
 
@@ -16,7 +19,6 @@ public class Validator {
 	 *
 	 * @param location
 	 * 		comma-delimited two double values
-	 *
 	 * @return true if location is valid location
 	 */
 	public static boolean isGeolocation(String location) {
@@ -26,9 +28,10 @@ public class Validator {
 
 	/**
 	 * Validates if a string is
-	 * @param string
-	 * @param separator
-	 * @return
+	 *
+	 * @param string a {@link java.lang.String} object.
+	 * @param separator a {@link java.lang.String} object.
+	 * @return a boolean.
 	 */
 	public static boolean containsOnlyDouble(String string, String separator) {
 
@@ -51,6 +54,7 @@ public class Validator {
 	 *
 	 * @param email
 	 * 		may be null
+	 * @return a boolean.
 	 */
 	public static boolean isEmail(String email) {
 
@@ -63,6 +67,7 @@ public class Validator {
 	 *
 	 * @param number
 	 * 		may be null
+	 * @return a boolean.
 	 */
 	public static boolean isMobileNumber(String number) {
 
@@ -71,12 +76,21 @@ public class Validator {
 
 	/**
 	 * Strict 11-digit mobile number. country code is not allowed.
+	 *
+	 * @param number a {@link java.lang.String} object.
+	 * @return a boolean.
 	 */
 	public static boolean isStrictMobileNumber(String number) {
 
 		return StringUtils.isNotBlank(number) && number.matches("1[0-9]{10}");
 	}
 
+	/**
+	 * <p>getEncoding.</p>
+	 *
+	 * @param str a {@link java.lang.String} object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	public static String getEncoding(String str) {
 
 		String encode;

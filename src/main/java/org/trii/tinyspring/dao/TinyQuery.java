@@ -12,6 +12,9 @@ import java.util.List;
 
 /**
  * This class is meant to build a simple JPQL query then query for the result using method chain.
+ *
+ * @author tian
+ * @version $Id: $Id
  */
 public class TinyQuery<T> {
 
@@ -48,10 +51,11 @@ public class TinyQuery<T> {
 	 */
 	StringBuilder joinClause = new StringBuilder();
 
+
 	/**
-	 * indicates whether a ORDER BY clause is present
+	 * The GROUP BY clause
 	 */
-	boolean noOrderClause = true;
+	StringBuilder groupByClause = new StringBuilder();
 
 	/**
 	 * table alias for the query
@@ -95,6 +99,14 @@ public class TinyQuery<T> {
 	private int maxRow = -1;
 
 
+	/**
+	 * <p>Constructor for TinyQuery.</p>
+	 *
+	 * @param entityManager
+	 * 		a {@link javax.persistence.EntityManager} object.
+	 * @param entityClass
+	 * 		a {@link java.lang.Class} object.
+	 */
 	public TinyQuery(EntityManager entityManager, Class<T> entityClass) {
 
 		this.entityManager = entityManager;
@@ -109,7 +121,7 @@ public class TinyQuery<T> {
 	 * @param ignoreNull
 	 * 		whether null parameters should be ignored.
 	 *
-	 * @return
+	 * @return the same instance
 	 */
 	public TinyQuery<T> ignoreNullParameter(boolean ignoreNull) {
 
@@ -121,7 +133,7 @@ public class TinyQuery<T> {
 	/**
 	 * Equivalent to "SELECT m FROM EntityClass m"
 	 *
-	 * @return
+	 * @return the same instance
 	 */
 	public TinyQuery<T> select() {
 
@@ -138,7 +150,7 @@ public class TinyQuery<T> {
 	 * @param cols
 	 * 		the columns to be selected
 	 *
-	 * @return
+	 * @return the same instance
 	 */
 	public TinyQuery<T> select(String... cols) {
 
@@ -162,7 +174,7 @@ public class TinyQuery<T> {
 	/**
 	 * adds DISTINCT keyword to the query. must be invoked after select()
 	 *
-	 * @return
+	 * @return the same instance
 	 */
 	public TinyQuery<T> distinct() {
 
@@ -197,7 +209,7 @@ public class TinyQuery<T> {
 	 * @param alias
 	 * 		the alias for the joined table
 	 *
-	 * @return
+	 * @return the same instance
 	 */
 	public TinyQuery<T> join(String column, String alias) {
 
@@ -206,6 +218,11 @@ public class TinyQuery<T> {
 		return this;
 	}
 
+	/**
+	 * <p>where.</p>
+	 *
+	 * @return a {@link org.trii.tinyspring.dao.TinyQuery} object.
+	 */
 	public TinyQuery<T> where() {
 
 		if(queryString.length() == 0) {
@@ -215,18 +232,33 @@ public class TinyQuery<T> {
 		return this;
 	}
 
+	/**
+	 * <p>and.</p>
+	 *
+	 * @return a {@link org.trii.tinyspring.dao.TinyQuery} object.
+	 */
 	public TinyQuery<T> and() {
 
 		nextWhereClauseKeyword = " AND ";
 		return this;
 	}
 
+	/**
+	 * <p>or.</p>
+	 *
+	 * @return a {@link org.trii.tinyspring.dao.TinyQuery} object.
+	 */
 	public TinyQuery<T> or() {
 
 		nextWhereClauseKeyword = " OR ";
 		return this;
 	}
 
+	/**
+	 * <p>not.</p>
+	 *
+	 * @return a {@link org.trii.tinyspring.dao.TinyQuery} object.
+	 */
 	public TinyQuery<T> not() {
 
 		isNotPresent = true;
@@ -234,10 +266,14 @@ public class TinyQuery<T> {
 	}
 
 	/**
-	 * @param column
-	 * @param value
+	 * <p>greaterThan.</p>
 	 *
-	 * @return
+	 * @param column
+	 * 		column name
+	 * @param value
+	 * 		value
+	 *
+	 * @return the same instance
 	 */
 	public TinyQuery<T> greaterThan(String column, Object value) {
 
@@ -245,6 +281,8 @@ public class TinyQuery<T> {
 	}
 
 	/**
+	 * <p>greaterThan.</p>
+	 *
 	 * @param alias
 	 * 		JPQL table alias
 	 * @param column
@@ -253,7 +291,7 @@ public class TinyQuery<T> {
 	 * 		value object
 	 * 		ignored if value is null.
 	 *
-	 * @return
+	 * @return the same instance
 	 */
 	public TinyQuery<T> greaterThan(String alias, String column, Object value) {
 
@@ -268,7 +306,7 @@ public class TinyQuery<T> {
 
 			currentClause.append(String.format("%s.%s>:%s", alias, column, parameterHolder));
 			namedParameters.put(parameterHolder, value);
-			whereClauseCount++;
+
 		}
 		postWhereClause(valid);
 
@@ -276,10 +314,14 @@ public class TinyQuery<T> {
 	}
 
 	/**
-	 * @param column
-	 * @param value
+	 * <p>greaterThanOrEqual.</p>
 	 *
-	 * @return
+	 * @param column
+	 * 		column name
+	 * @param value
+	 * 		value object 		ignored if value is null.
+	 *
+	 * @return the same instance
 	 *
 	 * @see TinyQuery#equal(String, String, Object)
 	 */
@@ -289,6 +331,8 @@ public class TinyQuery<T> {
 	}
 
 	/**
+	 * <p>greaterThanOrEqual.</p>
+	 *
 	 * @param alias
 	 * 		JPQL table alias
 	 * @param column
@@ -297,7 +341,7 @@ public class TinyQuery<T> {
 	 * 		value object
 	 * 		ignored if value is null.
 	 *
-	 * @return
+	 * @return the same instance
 	 */
 	public TinyQuery<T> greaterThanOrEqual(String alias, String column, Object value) {
 
@@ -310,17 +354,21 @@ public class TinyQuery<T> {
 			String parameterHolder = column + "_" + suffix++;
 			currentClause.append(String.format("%s.%s>=:%s", alias, column, parameterHolder));
 			namedParameters.put(parameterHolder, value);
-			whereClauseCount++;
+
 		}
 		postWhereClause(valid);
 		return this;
 	}
 
 	/**
-	 * @param column
-	 * @param value
+	 * <p>lessThanOrEqual.</p>
 	 *
-	 * @return
+	 * @param column
+	 * 		column name
+	 * @param value
+	 * 		value object 		ignored if value is null.
+	 *
+	 * @return the same instance
 	 *
 	 * @see TinyQuery#equal(String, String, Object)
 	 */
@@ -330,6 +378,8 @@ public class TinyQuery<T> {
 	}
 
 	/**
+	 * <p>lessThanOrEqual.</p>
+	 *
 	 * @param alias
 	 * 		JPQL table alias
 	 * @param column
@@ -338,7 +388,7 @@ public class TinyQuery<T> {
 	 * 		value object
 	 * 		ignored if value is null.
 	 *
-	 * @return
+	 * @return the same instance
 	 */
 	public TinyQuery<T> lessThanOrEqual(String alias, String column, Object value) {
 
@@ -350,17 +400,21 @@ public class TinyQuery<T> {
 			String parameterHolder = column + "_" + suffix++;
 			currentClause.append(String.format("%s.%s<=:%s", alias, column, parameterHolder));
 			namedParameters.put(parameterHolder, value);
-			whereClauseCount++;
+
 		}
 		postWhereClause(valid);
 		return this;
 	}
 
 	/**
-	 * @param column
-	 * @param value
+	 * <p>lessThan.</p>
 	 *
-	 * @return
+	 * @param column
+	 * 		column name
+	 * @param value
+	 * 		value object 		ignored if value is null.
+	 *
+	 * @return the same instance
 	 *
 	 * @see TinyQuery#equal(String, String, Object)
 	 */
@@ -370,6 +424,8 @@ public class TinyQuery<T> {
 	}
 
 	/**
+	 * <p>lessThan.</p>
+	 *
 	 * @param alias
 	 * 		JPQL table alias
 	 * @param column
@@ -378,7 +434,7 @@ public class TinyQuery<T> {
 	 * 		value object
 	 * 		ignored if value is null.
 	 *
-	 * @return
+	 * @return the same instance
 	 */
 	public TinyQuery<T> lessThan(String alias, String column, Object value) {
 
@@ -391,17 +447,21 @@ public class TinyQuery<T> {
 			String parameterHolder = column + "_" + suffix++;
 			currentClause.append(String.format("%s.%s<:%s", alias, column, parameterHolder));
 			namedParameters.put(parameterHolder, value);
-			whereClauseCount++;
+
 		}
 		postWhereClause(valid);
 		return this;
 	}
 
 	/**
-	 * @param column
-	 * @param value
+	 * <p>equal.</p>
 	 *
-	 * @return
+	 * @param column
+	 * 		column name
+	 * @param value
+	 * 		value object 		ignored if value is null.
+	 *
+	 * @return the same instance
 	 *
 	 * @see TinyQuery#equal(String, String, Object)
 	 */
@@ -411,6 +471,8 @@ public class TinyQuery<T> {
 	}
 
 	/**
+	 * <p>equal.</p>
+	 *
 	 * @param alias
 	 * 		JPQL table alias
 	 * @param column
@@ -419,7 +481,7 @@ public class TinyQuery<T> {
 	 * 		value object
 	 * 		ignored if value is null.
 	 *
-	 * @return
+	 * @return the same instance
 	 */
 	public TinyQuery<T> equal(String alias, String column, Object value) {
 
@@ -435,17 +497,21 @@ public class TinyQuery<T> {
 			String parameterHolder = column.replace(".", "_") + "_" + suffix++;
 			currentClause.append(String.format("%s.%s=:%s", alias, column, parameterHolder));
 			namedParameters.put(parameterHolder, value);
-			whereClauseCount++;
+
 		}
 		postWhereClause(valid);
 		return this;
 	}
 
 	/**
-	 * @param column
-	 * @param value
+	 * <p>notEqual.</p>
 	 *
-	 * @return
+	 * @param column
+	 * 		column name
+	 * @param value
+	 * 		value object 		ignored if value is null.
+	 *
+	 * @return the same instance
 	 *
 	 * @see TinyQuery#equal(String, String, Object)
 	 */
@@ -455,6 +521,8 @@ public class TinyQuery<T> {
 	}
 
 	/**
+	 * <p>notEqual.</p>
+	 *
 	 * @param alias
 	 * 		JPQL table alias
 	 * @param column
@@ -463,7 +531,7 @@ public class TinyQuery<T> {
 	 * 		value object
 	 * 		ignored if value is null.
 	 *
-	 * @return
+	 * @return the same instance
 	 */
 	public TinyQuery<T> notEqual(String alias, String column, Object value) {
 
@@ -476,17 +544,21 @@ public class TinyQuery<T> {
 			String parameterHolder = column + "_" + suffix++;
 			currentClause.append(String.format("%s.%s<>:%s", alias, column, parameterHolder));
 			namedParameters.put(parameterHolder, value);
-			whereClauseCount++;
+
 		}
 		postWhereClause(valid);
 		return this;
 	}
 
 	/**
-	 * @param column
-	 * @param value
+	 * <p>like.</p>
 	 *
-	 * @return
+	 * @param column
+	 * 		column name
+	 * @param value
+	 * 		value object 		ignored if value is null.
+	 *
+	 * @return the same instance
 	 *
 	 * @see TinyQuery#equal(String, String, Object)
 	 */
@@ -496,6 +568,8 @@ public class TinyQuery<T> {
 	}
 
 	/**
+	 * <p>like.</p>
+	 *
 	 * @param alias
 	 * 		JPQL table alias
 	 * @param column
@@ -504,7 +578,7 @@ public class TinyQuery<T> {
 	 * 		value object
 	 * 		ignored if value is null.
 	 *
-	 * @return
+	 * @return the same instance
 	 */
 	public TinyQuery<T> like(String alias, String column, String value) {
 
@@ -515,18 +589,44 @@ public class TinyQuery<T> {
 				alias = this.tableAlias;
 			}
 			currentClause.append(String.format("%s.%s LIKE '%s'", alias, column, value));
-			whereClauseCount++;
+
 		}
 		postWhereClause(valid);
 		return this;
 	}
 
 
+	/**
+	 * <p>between.</p>
+	 *
+	 * @param column
+	 * 		a {@link java.lang.String} object.
+	 * @param value1
+	 * 		a {@link java.lang.Object} object.
+	 * @param value2
+	 * 		a {@link java.lang.Object} object.
+	 *
+	 * @return a {@link org.trii.tinyspring.dao.TinyQuery} object.
+	 */
 	public TinyQuery<T> between(String column, Object value1, Object value2) {
 
 		return between(null, column, value1, value2);
 	}
 
+	/**
+	 * <p>between.</p>
+	 *
+	 * @param alias
+	 * 		a {@link java.lang.String} object.
+	 * @param column
+	 * 		a {@link java.lang.String} object.
+	 * @param value1
+	 * 		a {@link java.lang.Object} object.
+	 * @param value2
+	 * 		a {@link java.lang.Object} object.
+	 *
+	 * @return a {@link org.trii.tinyspring.dao.TinyQuery} object.
+	 */
 	public TinyQuery<T> between(String alias, String column, Object value1, Object value2) {
 
 		boolean valid = validateParameters(value1, value2);
@@ -539,17 +639,21 @@ public class TinyQuery<T> {
 					alias, column, parameterHolder + "1", parameterHolder + "2"));
 			namedParameters.put(parameterHolder + "1", value1);
 			namedParameters.put(parameterHolder + "2", value2);
-			whereClauseCount++;
+
 		}
 		postWhereClause(valid);
 		return this;
 	}
 
 	/**
-	 * @param column
-	 * @param value
+	 * <p>in.</p>
 	 *
-	 * @return
+	 * @param column
+	 * 		a {@link java.lang.String} object.
+	 * @param value
+	 * 		an array of {@link java.lang.Object} objects.
+	 *
+	 * @return a {@link org.trii.tinyspring.dao.TinyQuery} object.
 	 *
 	 * @see TinyQuery#equal(String, String, Object)
 	 */
@@ -559,6 +663,8 @@ public class TinyQuery<T> {
 	}
 
 	/**
+	 * <p>in.</p>
+	 *
 	 * @param alias
 	 * 		JPQL table alias
 	 * @param column
@@ -567,7 +673,7 @@ public class TinyQuery<T> {
 	 * 		value object
 	 * 		ignored if value is null.
 	 *
-	 * @return
+	 * @return a {@link org.trii.tinyspring.dao.TinyQuery} object.
 	 */
 	public TinyQuery<T> in(String alias, String column, Object[] values) {
 
@@ -587,25 +693,46 @@ public class TinyQuery<T> {
 			String valueString = StringUtils.join(list, ",");
 			currentClause.append(String.format("%s.%s IN (%s)", alias, column,
 					valueString));
-			whereClauseCount++;
+
 		}
 		postWhereClause(valid);
 		return this;
 	}
 
+	/**
+	 * <p>orderBy.</p>
+	 *
+	 * @param colunmn
+	 * 		a {@link java.lang.String} object.
+	 * @param orderType
+	 * 		a {@link org.trii.tinyspring.dao.OrderType} object.
+	 *
+	 * @return a {@link org.trii.tinyspring.dao.TinyQuery} object.
+	 */
 	public TinyQuery<T> orderBy(String colunmn, OrderType orderType) {
 
 		return orderBy(null, colunmn, orderType);
 	}
 
+	/**
+	 * <p>orderBy.</p>
+	 *
+	 * @param alias
+	 * 		a {@link java.lang.String} object.
+	 * @param colunmn
+	 * 		a {@link java.lang.String} object.
+	 * @param orderType
+	 * 		a {@link org.trii.tinyspring.dao.OrderType} object.
+	 *
+	 * @return a {@link org.trii.tinyspring.dao.TinyQuery} object.
+	 */
 	public TinyQuery<T> orderBy(String alias, String colunmn, OrderType orderType) {
 
 		if(queryString.length() == 0) {
 			throw new RuntimeException("No SELECT ** FROM ** found. invoke select() first.");
 		}
-		if(noOrderClause) {
+		if(orderByClause.length() == 0) {
 			orderByClause.append(" ORDER BY ");
-			noOrderClause = false;
 		} else {
 			orderByClause.append(",");
 		}
@@ -618,6 +745,27 @@ public class TinyQuery<T> {
 		return this;
 	}
 
+	public TinyQuery<T> groupBy(String colunmn) {
+
+		return groupBy(null, colunmn);
+	}
+
+	public TinyQuery<T> groupBy(String alias, String colunmn) {
+
+		if(groupByClause.length() == 0) {
+			groupByClause.append(" GROUP BY ");
+		} else {
+			groupByClause.append(",");
+		}
+		if(alias == null) {
+			groupByClause.append(tableAlias);
+		} else {
+			groupByClause.append(alias);
+		}
+		groupByClause.append(".").append(colunmn).append(" ");
+		return this;
+	}
+
 	////////////////////////////////////////////////////////////////////////////////////////
 	// native JPQL query
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -626,8 +774,9 @@ public class TinyQuery<T> {
 	 * set a JPQL query. Invocation of this method will invalidate all precedent clause.
 	 *
 	 * @param jpql
+	 * 		a {@link java.lang.String} object.
 	 *
-	 * @return
+	 * @return a {@link org.trii.tinyspring.dao.TinyQuery} object.
 	 */
 	public TinyQuery<T> query(String jpql) {
 
@@ -640,9 +789,11 @@ public class TinyQuery<T> {
 	 * adds a positional parameter for the JPQL set by query()
 	 *
 	 * @param position
+	 * 		a int.
 	 * @param value
+	 * 		a {@link java.lang.Object} object.
 	 *
-	 * @return
+	 * @return a {@link org.trii.tinyspring.dao.TinyQuery} object.
 	 */
 	public TinyQuery<T> param(int position, Object value) {
 
@@ -654,9 +805,11 @@ public class TinyQuery<T> {
 	 * adds a named parameter for the JPQL set by query()
 	 *
 	 * @param name
+	 * 		a {@link java.lang.String} object.
 	 * @param value
+	 * 		a {@link java.lang.Object} object.
 	 *
-	 * @return
+	 * @return a {@link org.trii.tinyspring.dao.TinyQuery} object.
 	 */
 	public TinyQuery<T> param(String name, Object value) {
 
@@ -742,8 +895,10 @@ public class TinyQuery<T> {
 	 * @param numberPerPage
 	 * 		maximum number of results to retrieve.
 	 *
-	 * @return
+	 * @return a {@link org.trii.tinyspring.dao.TinyQuery} object.
 	 *
+	 * @see javax.persistence.Query#setFirstResult(int)
+	 * @see javax.persistence.Query#setMaxResults(int)
 	 * @see javax.persistence.Query#setFirstResult(int)
 	 * @see javax.persistence.Query#setMaxResults(int)
 	 */
@@ -796,6 +951,8 @@ public class TinyQuery<T> {
 	 *
 	 * @see javax.persistence.Query#setFirstResult(int)
 	 * @see javax.persistence.Query#setMaxResults(int)
+	 * @see javax.persistence.Query#setFirstResult(int)
+	 * @see javax.persistence.Query#setMaxResults(int)
 	 */
 	public List<T> getResultList(Integer startRow, Integer maxRow) {
 
@@ -811,7 +968,9 @@ public class TinyQuery<T> {
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * @return jpa query
+	 * @return a jpa Query object
+	 *
+	 * @see javax.persistence.Query
 	 */
 	private Query createQuery() {
 
@@ -821,6 +980,8 @@ public class TinyQuery<T> {
 		queryString.append(joinClause);
 		queryString.append(whereClause);
 		queryString.append(orderByClause);
+		queryString.append(groupByClause);
+
 		log.debug("Query built: " + queryString);
 		Query query = entityManager.createQuery(queryString.toString());
 
@@ -834,7 +995,10 @@ public class TinyQuery<T> {
 	}
 
 	/**
+	 * encloses a where clause
+	 *
 	 * @param valid
+	 * 		whether the given WHERE clause's parameter is valid.
 	 */
 	private void postWhereClause(boolean valid) {
 
@@ -849,11 +1013,20 @@ public class TinyQuery<T> {
 			}
 			currentClause.insert(0, whereClauseCount == 0 ? " WHERE " : nextWhereClauseKeyword);
 			whereClause.append(currentClause);
+			whereClauseCount++;
 		}
 		nextWhereClauseKeyword = null;
 		currentClause.delete(0, currentClause.length());
 	}
 
+	/**
+	 * validates parameters
+	 *
+	 * @param values
+	 * 		parameters
+	 *
+	 * @return true if no values is null,  otherwise false
+	 */
 	private boolean validateParameters(Object... values) {
 
 		boolean result = values != null && values.length > 0;
@@ -865,6 +1038,5 @@ public class TinyQuery<T> {
 
 		return result;
 	}
-
 
 }

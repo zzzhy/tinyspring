@@ -15,8 +15,11 @@ import java.util.Date;
  * User: Sebastian MA
  * Date: June 22, 2014
  * Time: 23:17
- * <p/>
+ * <p>
  * DateTimeUtils using JodaTime library
+ *
+ * @author tian
+ * @version $Id: $Id
  */
 public class DateTimeUtils {
 
@@ -28,7 +31,9 @@ public class DateTimeUtils {
 	 * formats date to HH:mm
 	 *
 	 * @param date
-	 * @return
+	 * 		a {@link java.util.Date} object.
+	 *
+	 * @return a {@link java.lang.String} object.
 	 */
 	public static String toHHmm(Date date) {
 
@@ -36,14 +41,26 @@ public class DateTimeUtils {
 	}
 
 	/**
+	 * <p>toDateString.</p>
+	 *
 	 * @param date
-	 * @return
+	 * 		a {@link java.util.Date} object.
+	 *
+	 * @return a {@link java.lang.String} object.
 	 */
 	public static String toDateString(Date date) {
 
 		return dateFormatter.format(date);
 	}
 
+	/**
+	 * <p>toTimestamp.</p>
+	 *
+	 * @param dateString
+	 * 		a {@link java.lang.String} object.
+	 *
+	 * @return a {@link java.sql.Timestamp} object.
+	 */
 	public static Timestamp toTimestamp(String dateString) {
 
 		try {
@@ -57,11 +74,14 @@ public class DateTimeUtils {
 	/**
 	 * a offset equals to zero means same day as the given time.a offset less than zero
 	 * means [offset] days before the given time. a offset greater than zero means
-	 * [offset] days after the given time.<br></br>
+	 * [offset] days after the given time.<br>
 	 *
 	 * @param time
-	 * @param offset offset in days.
-	 * @return
+	 * 		a {@link java.util.Date} object.
+	 * @param offset
+	 * 		offset in days.
+	 *
+	 * @return a {@link java.util.Date} object.
 	 */
 	public static Date toStartOfDay(Date time, int offset) {
 
@@ -75,6 +95,16 @@ public class DateTimeUtils {
 		return new Date(jodaTime.getMillis());
 	}
 
+	/**
+	 * <p>toEndOfDay.</p>
+	 *
+	 * @param time
+	 * 		a {@link java.util.Date} object.
+	 * @param offset
+	 * 		a int.
+	 *
+	 * @return a {@link java.util.Date} object.
+	 */
 	public static Date toEndOfDay(Date time, int offset) {
 
 		DateTime jodaTime = new DateTime(time.getTime());
@@ -86,6 +116,18 @@ public class DateTimeUtils {
 		return new Date(jodaTime.getMillis());
 	}
 
+	/**
+	 * <p>toStartOfMonth.</p>
+	 *
+	 * @param year
+	 * 		a int.
+	 * @param month
+	 * 		a int.
+	 * @param offset
+	 * 		a int.
+	 *
+	 * @return a {@link java.util.Date} object.
+	 */
 	public static Date toStartOfMonth(int year, int month, int offset) {
 
 		return new MutableDateTime()
@@ -101,6 +143,18 @@ public class DateTimeUtils {
 				.toDate();
 	}
 
+	/**
+	 * <p>toEndOfMonth.</p>
+	 *
+	 * @param year
+	 * 		a int.
+	 * @param month
+	 * 		a int.
+	 * @param offset
+	 * 		a int.
+	 *
+	 * @return a {@link java.util.Date} object.
+	 */
 	public static Date toEndOfMonth(int year, int month, int offset) {
 
 		return new MutableDateTime()
@@ -116,6 +170,11 @@ public class DateTimeUtils {
 				.toDate();
 	}
 
+	/**
+	 * <p>now.</p>
+	 *
+	 * @return a {@link java.sql.Timestamp} object.
+	 */
 	public static Timestamp now() {
 
 		return new Timestamp(System.currentTimeMillis());
