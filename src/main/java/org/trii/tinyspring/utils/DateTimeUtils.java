@@ -2,11 +2,10 @@ package org.trii.tinyspring.utils;
 
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -20,9 +19,9 @@ import java.util.Date;
  */
 public class DateTimeUtils {
 
-	static DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+	private static DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
 
-	static DateFormat hourMinuteFormatter = new SimpleDateFormat("HH:mm");
+	private static DateTimeFormatter hourMinuteFormatter = DateTimeFormat.forPattern("HH:mm");
 
 	/**
 	 * formats date to HH:mm
@@ -33,27 +32,27 @@ public class DateTimeUtils {
 	 */
 	public static String toHHmm(Date date) {
 
-		return hourMinuteFormatter.format(date);
+		return hourMinuteFormatter.print(date.getTime());
 	}
 
 	/**
+	 * format to yyyy-MM-dd
+	 *
 	 * @param date
 	 *
 	 * @return
 	 */
 	public static String toDateString(Date date) {
 
-		return dateFormatter.format(date);
+		if(date == null) {
+			return "";
+		}
+		return dateFormatter.print(date.getTime());
 	}
 
 	public static Timestamp toTimestamp(String dateString) {
 
-		try {
-			return new Timestamp(dateFormatter.parse(dateString).getTime());
-		} catch(ParseException e) {
-			e.printStackTrace();
-			return null;
-		}
+		return new Timestamp(dateFormatter.parseDateTime(dateString).getMillis());
 	}
 
 	/**
@@ -69,7 +68,7 @@ public class DateTimeUtils {
 	 *
 	 * @return
 	 */
-	public static Date beginOfDay(Date time, int offset) {
+	public static Timestamp beginOfDay(Date time, int offset) {
 
 		DateTime jodaTime = new DateTime(time.getTime());
 		jodaTime = jodaTime
@@ -78,7 +77,7 @@ public class DateTimeUtils {
 				.secondOfMinute().withMinimumValue();
 
 		jodaTime = jodaTime.plusDays(offset);
-		return new Date(jodaTime.getMillis());
+		return new Timestamp(jodaTime.getMillis());
 	}
 
 	/**
@@ -89,7 +88,7 @@ public class DateTimeUtils {
 	 *
 	 * @return the specific date
 	 */
-	public static Date beginOfDay(Date time) {
+	public static Timestamp beginOfDay(Date time) {
 
 		DateTime jodaTime = new DateTime(time.getTime());
 		jodaTime = jodaTime
@@ -98,7 +97,19 @@ public class DateTimeUtils {
 				.secondOfMinute().withMinimumValue();
 
 		jodaTime = jodaTime.plusDays(0);
-		return new Date(jodaTime.getMillis());
+		return new Timestamp(jodaTime.getMillis());
+	}
+
+	public static Timestamp beginOfDay(String timeString) {
+
+		DateTime jodaTime = new DateTime(timeString);
+		jodaTime = jodaTime
+				.hourOfDay().withMinimumValue()
+				.minuteOfHour().withMinimumValue()
+				.secondOfMinute().withMinimumValue();
+
+		jodaTime = jodaTime.plusDays(0);
+		return new Timestamp(jodaTime.getMillis());
 	}
 
 	/**
@@ -106,7 +117,7 @@ public class DateTimeUtils {
 	 *
 	 * @return the specific date
 	 */
-	public static Date beginOfDay() {
+	public static Timestamp beginOfDay() {
 
 		DateTime jodaTime = new DateTime(System.currentTimeMillis());
 		jodaTime = jodaTime
@@ -115,10 +126,21 @@ public class DateTimeUtils {
 				.secondOfMinute().withMinimumValue();
 
 		jodaTime = jodaTime.plusDays(0);
-		return new Date(jodaTime.getMillis());
+		return new Timestamp(jodaTime.getMillis());
 	}
 
-	public static Date endOfDay(Date time, int offset) {
+	public static Timestamp endOfDay(String dateString) {
+
+		DateTime jodaTime = new DateTime(dateString);
+		jodaTime = jodaTime
+				.hourOfDay().withMaximumValue()
+				.minuteOfHour().withMaximumValue()
+				.secondOfMinute().withMaximumValue();
+
+		return new Timestamp(jodaTime.getMillis());
+	}
+
+	public static Timestamp endOfDay(Date time, int offset) {
 
 		DateTime jodaTime = new DateTime(time.getTime());
 		jodaTime = jodaTime
@@ -126,22 +148,23 @@ public class DateTimeUtils {
 				.minuteOfHour().withMaximumValue()
 				.secondOfMinute().withMaximumValue();
 		jodaTime = jodaTime.plusDays(offset);
-		return new Date(jodaTime.getMillis());
+		return new Timestamp(jodaTime.getMillis());
 	}
 
-	public static Date beginOfMonth(int year, int month, int offset) {
+	public static Timestamp beginOfMonth(int year, int month, int offset) {
 
-		return new MutableDateTime()
-				.year().set(year)
-				.monthOfYear().set(month)
-				.toDateTime()
-				.dayOfMonth().withMinimumValue()
-				.hourOfDay().withMinimumValue()
-				.minuteOfHour().withMinimumValue()
-				.secondOfMinute().withMinimumValue()
-				.millisOfSecond().withMinimumValue()
-				.plusMonths(offset)
-				.toDate();
+		return new Timestamp(
+				new MutableDateTime()
+						.year().set(year)
+						.monthOfYear().set(month)
+						.toDateTime()
+						.dayOfMonth().withMinimumValue()
+						.hourOfDay().withMinimumValue()
+						.minuteOfHour().withMinimumValue()
+						.secondOfMinute().withMinimumValue()
+						.millisOfSecond().withMinimumValue()
+						.plusMonths(offset).getMillis()
+		);
 	}
 
 	public static Date endOfMonth(int year, int month, int offset) {
@@ -162,5 +185,10 @@ public class DateTimeUtils {
 	public static Timestamp now() {
 
 		return new Timestamp(System.currentTimeMillis());
+	}
+
+	public static Timestamp parse(String time) {
+
+		return new Timestamp(DateTime.parse(time).toDate().getTime());
 	}
 }
