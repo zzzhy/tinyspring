@@ -1039,4 +1039,16 @@ public class TinyQuery<T> {
 		return result;
 	}
 
+
+	/**
+	 * null safe
+	 *
+	 * @param term
+	 *
+	 * @return
+	 */
+	public static String likeContains(String term) {
+
+		return term == null ? null : "%" + term + "%";
+	}
 }
