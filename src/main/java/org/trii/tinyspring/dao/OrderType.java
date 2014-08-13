@@ -1,10 +1,10 @@
 package org.trii.tinyspring.dao;
 
 /**
- * <p>OrderType class.</p>
- *
- * @author tian
- * @version $Id: $Id
+ * Created with IntelliJ IDEA.
+ * User: Sebastian MA
+ * Date: June 22, 2014
+ * Time: 18:32
  */
 public enum OrderType {
 	ASC, DESC

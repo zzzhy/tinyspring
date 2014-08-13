@@ -7,4 +7,4 @@
  * it depends on apache common-lang3 and joda-time.
  *
  */
-package org.trii.tinyspring.utils;
+package com.tinyspring.utils;

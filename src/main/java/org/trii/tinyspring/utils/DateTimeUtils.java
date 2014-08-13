@@ -1,4 +1,4 @@
-package org.trii.tinyspring.utils;
+package com.tinyspring.utils;
 
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
@@ -192,4 +192,3 @@ public class DateTimeUtils {
 		return new Timestamp(DateTime.parse(time).toDate().getTime());
 	}
 }
-

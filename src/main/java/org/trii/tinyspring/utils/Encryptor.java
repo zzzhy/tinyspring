@@ -12,20 +12,11 @@ import java.security.NoSuchAlgorithmException;
  * User: Sebastian MA
  * Date: February 18, 2014
  * Time: 12:41
- *
- * @author tian
- * @version $Id: $Id
  */
 public class Encryptor {
 
 	private static Logger log = LoggerFactory.getLogger(Encryptor.class);
 
-	/**
-	 * <p>encodeBase64.</p>
-	 *
-	 * @param string a {@link java.lang.String} object.
-	 * @return a {@link java.lang.String} object.
-	 */
 	public static String encodeBase64(String string) {
 
 		return Base64.encodeBase64String(string.getBytes());
@@ -34,8 +25,8 @@ public class Encryptor {
 	/**
 	 * Calculate string's md5 digest.
 	 *
-	 * @param string a {@link java.lang.String} object.
-	 * @return a {@link java.lang.String} object.
+	 * @param string
+	 * @return
 	 */
 	public static String md5(String string) {
 
