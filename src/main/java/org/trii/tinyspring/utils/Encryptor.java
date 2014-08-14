@@ -4,8 +4,11 @@ import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.crypto.*;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,10 +25,12 @@ public class Encryptor {
 		return Base64.encodeBase64String(string.getBytes());
 	}
 
+
 	/**
 	 * Calculate string's md5 digest.
 	 *
 	 * @param string
+	 *
 	 * @return
 	 */
 	public static String md5(String string) {
@@ -56,6 +61,58 @@ public class Encryptor {
 			log.error(e.getMessage(), e);
 			return null;
 		}
+	}
+
+
+	public static byte[] desEncrypt(byte[] array, String key) {
+
+		javax.crypto.SecretKey generatedKey;
+		KeyGenerator generator;
+		try {
+			generator = KeyGenerator.getInstance("DES");
+
+			SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
+			secureRandom.setSeed(key.getBytes());
+			generator.init(secureRandom);
+			generatedKey = generator.generateKey();
+			generator = null;
+
+			Cipher cipher = Cipher.getInstance("DES");
+			cipher.init(Cipher.ENCRYPT_MODE, generatedKey);
+			return cipher.doFinal(array);
+		} catch(NoSuchAlgorithmException e) {
+			log.error("DES encryption failed. {}", e.getMessage());
+		} catch(IllegalBlockSizeException | InvalidKeyException | BadPaddingException |
+				NoSuchPaddingException e) {
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	public byte[] desDecrypt(byte[] array, String key) {
+
+		javax.crypto.SecretKey generatedKey;
+		KeyGenerator generator;
+		try {
+			generator = KeyGenerator.getInstance("DES");
+
+			SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
+			secureRandom.setSeed(key.getBytes());
+			generator.init(secureRandom);
+			generatedKey = generator.generateKey();
+			generator = null;
+
+			Cipher cipher = Cipher.getInstance("DES");
+			cipher.init(Cipher.DECRYPT_MODE, generatedKey);
+			return cipher.doFinal(array);
+		} catch(NoSuchAlgorithmException e) {
+			log.error("DES decryption failed.", e);
+		} catch(IllegalBlockSizeException | InvalidKeyException | BadPaddingException |
+				NoSuchPaddingException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }
