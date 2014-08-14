@@ -29,40 +29,40 @@ public class TinyQuery<T> {
 	/**
 	 * the main query string.
 	 */
-	StringBuilder whereClause = new StringBuilder();
+	private StringBuilder whereClause = new StringBuilder();
 
 
 	/**
 	 * The ORDER BY clause
 	 */
-	StringBuilder orderByClause = new StringBuilder();
+	private StringBuilder orderByClause = new StringBuilder();
 
 	/**
 	 * The GROUP BY clause
 	 */
-	StringBuilder groupByClause = new StringBuilder();
+	private StringBuilder groupByClause = new StringBuilder();
 
 	/**
 	 * WHERE clause string buffer
 	 */
-	StringBuilder currentClause = new StringBuilder();
+	private StringBuilder currentClause = new StringBuilder();
 
-	StringBuilder joinClause = new StringBuilder();
+	private StringBuilder joinClause = new StringBuilder();
 
 	/**
 	 * Table alias for the query
 	 */
-	String tableAlias = "_model";
+	private String tableAlias = "_model";
 
 	/**
 	 * Map for the query's named parameters.
 	 */
-	HashMap<String, Object> namedParameters = new HashMap<>();
+	private HashMap<String, Object> namedParameters = new HashMap<>();
 
 	/**
 	 * Map for the query's positional parameters.
 	 */
-	HashMap<Integer, Object> positionalParameters = new HashMap<>();
+	private HashMap<Integer, Object> positionalParameters = new HashMap<>();
 
 	private String nextWhereClauseKeyword;
 
@@ -246,8 +246,6 @@ public class TinyQuery<T> {
 	 * @param value
 	 *
 	 * @return
-	 *
-	 * @see com.tinyspring.dao.TinyQuery#equal(String, String, Object)
 	 */
 	public TinyQuery<T> greaterThanOrEqual(String column, Object value) {
 
@@ -286,8 +284,6 @@ public class TinyQuery<T> {
 	 * @param value
 	 *
 	 * @return
-	 *
-	 * @see com.tinyspring.dao.TinyQuery#equal(String, String, Object)
 	 */
 	public TinyQuery<T> lessThanOrEqual(String column, Object value) {
 
@@ -325,8 +321,6 @@ public class TinyQuery<T> {
 	 * @param value
 	 *
 	 * @return
-	 *
-	 * @see com.tinyspring.dao.TinyQuery#equal(String, String, Object)
 	 */
 	public TinyQuery<T> lessThan(String column, Object value) {
 
@@ -365,8 +359,6 @@ public class TinyQuery<T> {
 	 * @param value
 	 *
 	 * @return
-	 *
-	 * @see com.tinyspring.dao.TinyQuery#equal(String, String, Object)
 	 */
 	public TinyQuery<T> equal(String column, Object value) {
 
@@ -407,8 +399,6 @@ public class TinyQuery<T> {
 	 * @param column
 	 *
 	 * @return
-	 *
-	 * @see com.tinyspring.dao.TinyQuery#equal(String, String, Object)
 	 */
 	public TinyQuery<T> isNull(String column) {
 
@@ -438,8 +428,6 @@ public class TinyQuery<T> {
 	 * @param column
 	 *
 	 * @return
-	 *
-	 * @see com.tinyspring.dao.TinyQuery#equal(String, String, Object)
 	 */
 	public TinyQuery<T> isNotNull(String column) {
 
@@ -470,8 +458,6 @@ public class TinyQuery<T> {
 	 * @param value
 	 *
 	 * @return
-	 *
-	 * @see com.tinyspring.dao.TinyQuery#equal(String, String, Object)
 	 */
 	public TinyQuery<T> notEqual(String column, Object value) {
 
@@ -497,7 +483,7 @@ public class TinyQuery<T> {
 			if(StringUtils.isBlank(alias)) {
 				alias = this.tableAlias;
 			}
-			String parameterHolder = column + "_" + suffix++;
+			String parameterHolder = column.replace(".", "_") + "_" + suffix++;
 			currentClause.append(String.format("%s.%s<>:%s", alias, column, parameterHolder));
 			namedParameters.put(parameterHolder, value);
 		}
@@ -510,8 +496,6 @@ public class TinyQuery<T> {
 	 * @param value
 	 *
 	 * @return
-	 *
-	 * @see com.tinyspring.dao.TinyQuery#equal(String, String, Object)
 	 */
 	public TinyQuery<T> like(String column, String value) {
 
@@ -556,7 +540,7 @@ public class TinyQuery<T> {
 			if(StringUtils.isBlank(alias)) {
 				alias = this.tableAlias;
 			}
-			String parameterHolder = column + "_" + suffix++;
+			String parameterHolder = column.replace(".", "_") + "_" + suffix++;
 			currentClause.append(String.format("%s.%s BETWEEN :%s AND :%s",
 					alias, column, parameterHolder + "1", parameterHolder + "2"));
 			namedParameters.put(parameterHolder + "1", value1);
@@ -571,8 +555,6 @@ public class TinyQuery<T> {
 	 * @param value
 	 *
 	 * @return
-	 *
-	 * @see com.tinyspring.dao.TinyQuery#equal(String, String, Object)
 	 */
 	public TinyQuery<T> in(String column, Object[] value) {
 
@@ -598,12 +580,12 @@ public class TinyQuery<T> {
 			if(StringUtils.isBlank(alias)) {
 				alias = this.tableAlias;
 			}
-			String parameterHolder = column + "_" + suffix++;
+			String parameterHolder = column.replace(".", "_") + "_" + suffix++;
 			ArrayList<String> list = new ArrayList<>();
 			for(int i = 0; i < values.length; i++) {
 
-				list.add(":" + parameterHolder + i);
-				namedParameters.put(parameterHolder + i + "", values[i]);
+				list.add(":" + parameterHolder + "_" + i);
+				namedParameters.put(parameterHolder + "_" + i, values[i]);
 			}
 			String valueString = StringUtils.join(list, ",");
 			currentClause.append(String.format("%s.%s IN (%s)", alias, column,
@@ -865,7 +847,9 @@ public class TinyQuery<T> {
 
 			}
 			currentClause.insert(0, whereClauseCount == 0 ? " WHERE " :
-					nextWhereClauseKeyword.contains("WHERE") ? " AND " : nextWhereClauseKeyword);
+					nextWhereClauseKeyword.contains("WHERE") ? " AND " :
+							nextWhereClauseKeyword.trim().equalsIgnoreCase("WHERE")
+									? " AND " : nextWhereClauseKeyword);
 
 			whereClause.append(currentClause);
 			whereClauseCount++;
