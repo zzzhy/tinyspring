@@ -8,4 +8,6 @@ package org.trii.tinyspring.security;
  */
 public interface TinyUser {
 
+	public String getUsername();
+
 }
