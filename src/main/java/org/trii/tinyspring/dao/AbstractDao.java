@@ -1,6 +1,7 @@
 package org.trii.tinyspring.dao;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.trii.tinyspring.AbstractSpringBean;
 
 import javax.persistence.EntityManager;
@@ -17,6 +18,9 @@ public abstract class AbstractDao<T> extends AbstractSpringBean {
 
 	@PersistenceContext
 	protected EntityManager entityManager;
+
+	@Value("${tinyspring.dao.showJPQL:false}")
+	Boolean showJpql;
 
 	protected EntityManager getEntityManager() {
 
@@ -62,11 +66,11 @@ public abstract class AbstractDao<T> extends AbstractSpringBean {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Object> getColumnValues(String targetColumn, String matchColumnList,
+	public List getColumnValues(String targetColumn, String matchColumnList,
 	                                    Object... valueList) {
 
 		String[] columnList = StringUtils.split(matchColumnList);
-		if(valueList.length != matchColumnList.length()) {
+		if(valueList.length != columnList.length) {
 			throw new IllegalArgumentException();
 		}
 		TinyQuery query = beginQuery().select(targetColumn);
