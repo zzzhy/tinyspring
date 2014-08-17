@@ -87,11 +87,20 @@ public class TinyQuery<T> {
 
 	private int maxRow = -1;
 
+	private boolean showJpql = true;
+
 
 	public TinyQuery(EntityManager entityManager, Class<T> entityClass) {
 
 		this.entityManager = entityManager;
 		this.entityClass = entityClass;
+	}
+
+	public TinyQuery(EntityManager entityManager, Class<T> entityClass, boolean showJpql) {
+
+		this.entityManager = entityManager;
+		this.entityClass = entityClass;
+		this.showJpql = showJpql;
 	}
 
 	/**
@@ -820,7 +829,9 @@ public class TinyQuery<T> {
 		queryString.append(whereClause);
 		queryString.append(orderByClause);
 		queryString.append(groupByClause);
-		log.debug("Query built: " + queryString);
+		if(showJpql) {
+			log.debug("Query built: " + queryString);
+		}
 		Query query = entityManager.createQuery(queryString.toString());
 
 		for(int key : positionalParameters.keySet()) {

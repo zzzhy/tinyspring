@@ -84,7 +84,7 @@ public abstract class AbstractDao<T> extends AbstractSpringBean {
 
 	public TinyQuery<T> beginQuery() {
 
-		return new TinyQuery<>(getEntityManager(), getEntityClass());
+		return new TinyQuery<>(getEntityManager(), getEntityClass(),showJpql);
 	}
 
 
