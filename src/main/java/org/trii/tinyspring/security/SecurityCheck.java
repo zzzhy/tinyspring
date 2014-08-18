@@ -16,8 +16,8 @@ import java.lang.annotation.Target;
 public @interface SecurityCheck {
 
 	/**
-	 * default value is true. set to false if you wish to override class-level annotation. only for
-	 * method level.
+	 * default value is true. set to false if you wish to override class-level annotation. Only
+	 * effective if annotated on METHOD.
 	 *
 	 * @return
 	 */
@@ -28,14 +28,17 @@ public @interface SecurityCheck {
 	String requirePrivilege() default "";
 
 	/**
-	 * matched path will be checked unless it is excluded. only for class level.
+	 * If set, only matched paths will be checked unless it is excluded. Only effective if
+	 * annotated
+	 * on TYPE.
 	 *
 	 * @return
 	 */
 	String[] matches() default { };
 
 	/**
-	 * matched path will be excluded thus will NOT be checked. only for class level.
+	 * matched paths will be excluded thus will NOT be checked. Only effective if annotated on
+	 * TYPE.
 	 *
 	 * @return
 	 */
