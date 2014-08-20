@@ -67,16 +67,22 @@ public abstract class AbstractDao<T> extends AbstractSpringBean {
 
 	@SuppressWarnings("unchecked")
 	public List getColumnValues(String targetColumn, String matchColumnList,
-	                                    Object... valueList) {
+	                            Object... valueList) {
 
-		String[] columnList = StringUtils.split(matchColumnList);
-		if(valueList.length != columnList.length) {
-			throw new IllegalArgumentException();
+		String[] columnList = null;
+		if(StringUtils.isBlank(matchColumnList)) {
+
+		} else {
+			columnList = StringUtils.split(matchColumnList);
+			if(valueList.length != columnList.length) {
+				throw new IllegalArgumentException();
+			}
 		}
 		TinyQuery query = beginQuery().select(targetColumn);
-
-		for(int i = 0; i < columnList.length; i++) {
-			query.where().equal(columnList[i], valueList[i]);
+		if(columnList != null) {
+			for(int i = 0; i < columnList.length; i++) {
+				query.where().equal(columnList[i], valueList[i]);
+			}
 		}
 		query.groupBy(targetColumn);
 		return query.getUntypedResultList();
