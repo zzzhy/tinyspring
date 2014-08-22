@@ -6,7 +6,7 @@ import org.trii.tinyspring.utils.StopWatch;
  * Date: August 18, 2014
  * Time: 14:33
  */
-public class Test {
+public class TestStopWatch {
 
 
 	public static void main(String... args) throws InterruptedException {

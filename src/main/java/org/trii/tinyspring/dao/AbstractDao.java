@@ -8,6 +8,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
+import static org.trii.tinyspring.dao.TinyPredicate.equal;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Sebastian MA
@@ -81,7 +83,7 @@ public abstract class AbstractDao<T> extends AbstractSpringBean {
 		TinyQuery query = beginQuery().select(targetColumn);
 		if(columnList != null) {
 			for(int i = 0; i < columnList.length; i++) {
-				query.where().equal(columnList[i], valueList[i]);
+				query.where(equal(columnList[i], valueList[i]));
 			}
 		}
 		query.groupBy(targetColumn);
@@ -90,7 +92,7 @@ public abstract class AbstractDao<T> extends AbstractSpringBean {
 
 	public TinyQuery<T> beginQuery() {
 
-		return new TinyQuery<>(getEntityManager(), getEntityClass(),showJpql);
+		return new TinyQuery<>(getEntityManager(), getEntityClass(), showJpql);
 	}
 
 

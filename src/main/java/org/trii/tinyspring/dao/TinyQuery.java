@@ -18,76 +18,55 @@ import java.util.List;
  */
 public class TinyQuery<T> {
 
-	private static Logger log = LoggerFactory.getLogger(TinyQuery.class);
+	protected static Logger log = LoggerFactory.getLogger(TinyQuery.class);
 
-	private Class<T> entityClass;
+	protected Class<T> entityClass;
 
-	private EntityManager entityManager;
+	protected EntityManager entityManager;
 
-	private StringBuilder queryString = new StringBuilder();
+	protected StringBuilder queryString = new StringBuilder();
+
+	protected StringBuilder joinClause = new StringBuilder();
 
 	/**
 	 * the main query string.
 	 */
-	private StringBuilder whereClause = new StringBuilder();
-
+	protected StringBuilder whereClause = new StringBuilder();
 
 	/**
 	 * The ORDER BY clause
 	 */
-	private StringBuilder orderByClause = new StringBuilder();
+	protected StringBuilder orderByClause = new StringBuilder();
 
 	/**
 	 * The GROUP BY clause
 	 */
-	private StringBuilder groupByClause = new StringBuilder();
-
-	/**
-	 * WHERE clause string buffer
-	 */
-	private StringBuilder currentClause = new StringBuilder();
-
-	private StringBuilder joinClause = new StringBuilder();
+	protected StringBuilder groupByClause = new StringBuilder();
 
 	/**
 	 * Table alias for the query
 	 */
-	private String tableAlias = "_model";
+	public static String tableAlias = "_this";
 
 	/**
 	 * Map for the query's named parameters.
 	 */
-	private HashMap<String, Object> namedParameters = new HashMap<>();
+	protected HashMap<String, Object> namedParameters = new HashMap<>();
 
 	/**
 	 * Map for the query's positional parameters.
 	 */
-	private HashMap<Integer, Object> positionalParameters = new HashMap<>();
+	protected HashMap<Integer, Object> positionalParameters = new HashMap<>();
 
-	private String nextWhereClauseKeyword;
+	protected int index = 0;
 
-	/**
-	 * Number of the WHERE clause
-	 */
-	private int whereClauseCount = 0;
+	protected boolean ignoreNullParameter = true;
 
-	/**
-	 * parameter name suffix
-	 */
-	private int suffix = 0;
+	protected int startRow = -1;
 
-	/**
-	 * Indicates if NOT keyword is present
-	 */
-	private boolean isNotPresent = false;
+	protected int maxRow = -1;
 
-	private boolean ignoreNullParameter = true;
-
-	private int startRow = -1;
-
-	private int maxRow = -1;
-
-	private boolean showJpql = true;
+	protected boolean showJpql = true;
 
 
 	public TinyQuery(EntityManager entityManager, Class<T> entityClass) {
@@ -182,431 +161,37 @@ public class TinyQuery<T> {
 		return this;
 	}
 
-	public TinyQuery<T> where() {
 
-		if(queryString.length() == 0) {
-			throw new RuntimeException("No SELECT ** FROM ** found. invoke select() first.");
-		}
-		nextWhereClauseKeyword = " WHERE ";
+	public TinyQuery<T> where(TinyPredicate... predicates) {
+
+		TinyPredicate f = TinyPredicate.and(predicates);
+
+		whereClause.append(" WHERE ").append(formatPredicate(f));
 		return this;
 	}
 
-	public TinyQuery<T> and() {
+	public TinyQuery<T> and(TinyPredicate... predicates) {
 
-		nextWhereClauseKeyword = " AND ";
+		TinyPredicate f = TinyPredicate.and(predicates);
+
+		whereClause.append(whereClause.length() == 0 ? " WHERE " : " AND ").append(formatPredicate
+				(f));
 		return this;
 	}
 
-	public TinyQuery<T> or() {
+	public TinyQuery<T> or(TinyPredicate... predicates) {
 
-		nextWhereClauseKeyword = " OR ";
-		return this;
-	}
+		TinyPredicate f = TinyPredicate.and(predicates);
 
-	public TinyQuery<T> not() {
-
-		isNotPresent = true;
-		return this;
-	}
-
-	/**
-	 * @param column
-	 * @param value
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> greaterThan(String column, Object value) {
-
-		return greaterThan(null, column, value);
-	}
-
-	/**
-	 * @param alias
-	 * 		JPQL table alias
-	 * @param column
-	 * 		JPQL column name
-	 * @param value
-	 * 		value object
-	 * 		ignored if value is null.
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> greaterThan(String alias, String column, Object value) {
-
-		boolean valid = validateParameters(value);
-
-		if(valid) {
-
-			if(StringUtils.isBlank(alias)) {
-				alias = this.tableAlias;
-			}
-			String parameterHolder = column + "_" + suffix++;
-
-			currentClause.append(String.format("%s.%s>:%s", alias, column, parameterHolder));
-			namedParameters.put(parameterHolder, value);
-		}
-		postWhereClause(valid);
-
-		return this;
-	}
-
-	/**
-	 * @param column
-	 * @param value
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> greaterThanOrEqual(String column, Object value) {
-
-		return greaterThanOrEqual(null, column, value);
-	}
-
-	/**
-	 * @param alias
-	 * 		JPQL table alias
-	 * @param column
-	 * 		JPQL column name
-	 * @param value
-	 * 		value object
-	 * 		ignored if value is null.
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> greaterThanOrEqual(String alias, String column, Object value) {
-
-		boolean valid = validateParameters(value);
-		if(valid) {
-
-			if(StringUtils.isBlank(alias)) {
-				alias = this.tableAlias;
-			}
-			String parameterHolder = column + "_" + suffix++;
-			currentClause.append(String.format("%s.%s>=:%s", alias, column, parameterHolder));
-			namedParameters.put(parameterHolder, value);
-		}
-		postWhereClause(valid);
-		return this;
-	}
-
-	/**
-	 * @param column
-	 * @param value
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> lessThanOrEqual(String column, Object value) {
-
-		return lessThanOrEqual(null, column, value);
-	}
-
-	/**
-	 * @param alias
-	 * 		JPQL table alias
-	 * @param column
-	 * 		JPQL column name
-	 * @param value
-	 * 		value object
-	 * 		ignored if value is null.
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> lessThanOrEqual(String alias, String column, Object value) {
-
-		boolean valid = validateParameters(value);
-		if(valid) {
-			if(StringUtils.isBlank(alias)) {
-				alias = this.tableAlias;
-			}
-			String parameterHolder = column + "_" + suffix++;
-			currentClause.append(String.format("%s.%s<=:%s", alias, column, parameterHolder));
-			namedParameters.put(parameterHolder, value);
-		}
-		postWhereClause(valid);
-		return this;
-	}
-
-	/**
-	 * @param column
-	 * @param value
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> lessThan(String column, Object value) {
-
-		return lessThan(null, column, value);
-	}
-
-	/**
-	 * @param alias
-	 * 		JPQL table alias
-	 * @param column
-	 * 		JPQL column name
-	 * @param value
-	 * 		value object
-	 * 		ignored if value is null.
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> lessThan(String alias, String column, Object value) {
-
-		boolean valid = validateParameters(value);
-		if(valid) {
-
-			if(StringUtils.isBlank(alias)) {
-				alias = this.tableAlias;
-			}
-			String parameterHolder = column + "_" + suffix++;
-			currentClause.append(String.format("%s.%s<:%s", alias, column, parameterHolder));
-			namedParameters.put(parameterHolder, value);
-		}
-		postWhereClause(valid);
-		return this;
-	}
-
-	/**
-	 * @param column
-	 * @param value
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> equal(String column, Object value) {
-
-		return equal(null, column, value);
-	}
-
-	/**
-	 * @param alias
-	 * 		JPQL table alias
-	 * @param column
-	 * 		JPQL column name
-	 * @param value
-	 * 		value object
-	 * 		ignored if value is null.
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> equal(String alias, String column, Object value) {
-
-		boolean valid = validateParameters(value);
-		if(!ignoreNullParameter && !valid) {
-			throw new RuntimeException(String.format("Value for column %s.%s is null", alias,
-					column));
-		}
-		if(valid) {
-			if(StringUtils.isBlank(alias)) {
-				alias = this.tableAlias;
-			}
-			String parameterHolder = column.replace(".", "_") + "_" + suffix++;
-			currentClause.append(String.format("%s.%s=:%s", alias, column, parameterHolder));
-			namedParameters.put(parameterHolder, value);
-		}
-		postWhereClause(valid);
-		return this;
-	}
-
-	/**
-	 * @param column
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> isNull(String column) {
-
-		return isNull(null, column);
-	}
-
-	/**
-	 * @param alias
-	 * 		JPQL table alias
-	 * @param column
-	 * 		JPQL column name
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> isNull(String alias, String column) {
-
-
-		if(StringUtils.isBlank(alias)) {
-			alias = this.tableAlias;
-		}
-		currentClause.append(String.format("%s.%s IS NULL", alias, column));
-		postWhereClause(true);
-		return this;
-	}
-
-	/**
-	 * @param column
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> isNotNull(String column) {
-
-		return isNotNull(null, column);
-	}
-
-	/**
-	 * @param alias
-	 * 		JPQL table alias
-	 * @param column
-	 * 		JPQL column name
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> isNotNull(String alias, String column) {
-
-
-		if(StringUtils.isBlank(alias)) {
-			alias = this.tableAlias;
-		}
-		currentClause.append(String.format("%s.%s IS NOT NULL", alias, column));
-		postWhereClause(true);
-		return this;
-	}
-
-	/**
-	 * @param column
-	 * @param value
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> notEqual(String column, Object value) {
-
-		return notEqual(null, column, value);
-	}
-
-	/**
-	 * @param alias
-	 * 		JPQL table alias
-	 * @param column
-	 * 		JPQL column name
-	 * @param value
-	 * 		value object
-	 * 		ignored if value is null.
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> notEqual(String alias, String column, Object value) {
-
-		boolean valid = validateParameters(value);
-		if(valid) {
-
-			if(StringUtils.isBlank(alias)) {
-				alias = this.tableAlias;
-			}
-			String parameterHolder = column.replace(".", "_") + "_" + suffix++;
-			currentClause.append(String.format("%s.%s<>:%s", alias, column, parameterHolder));
-			namedParameters.put(parameterHolder, value);
-		}
-		postWhereClause(valid);
-		return this;
-	}
-
-	/**
-	 * @param column
-	 * @param value
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> like(String column, String value) {
-
-		return like(null, column, value);
-	}
-
-	/**
-	 * @param alias
-	 * 		JPQL table alias
-	 * @param column
-	 * 		JPQL column name
-	 * @param value
-	 * 		value object
-	 * 		ignored if value is null.
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> like(String alias, String column, String value) {
-
-		boolean valid = validateParameters(value);
-		if(valid) {
-
-			if(StringUtils.isBlank(alias)) {
-				alias = this.tableAlias;
-			}
-			currentClause.append(String.format("%s.%s LIKE '%s'", alias, column, value));
-		}
-		postWhereClause(valid);
+		whereClause.append(whereClause.length() == 0 ? " WHERE " : " OR ").append(formatPredicate
+				(f));
 		return this;
 	}
 
 
-	public TinyQuery<T> between(String column, Object value1, Object value2) {
+	public TinyQuery<T> orderBy(String column, OrderType orderType) {
 
-		return between(null, column, value1, value2);
-	}
-
-	public TinyQuery<T> between(String alias, String column, Object value1, Object value2) {
-
-		boolean valid = validateParameters(value1, value2);
-		if(valid) {
-			if(StringUtils.isBlank(alias)) {
-				alias = this.tableAlias;
-			}
-			String parameterHolder = column.replace(".", "_") + "_" + suffix++;
-			currentClause.append(String.format("%s.%s BETWEEN :%s AND :%s",
-					alias, column, parameterHolder + "1", parameterHolder + "2"));
-			namedParameters.put(parameterHolder + "1", value1);
-			namedParameters.put(parameterHolder + "2", value2);
-		}
-		postWhereClause(valid);
-		return this;
-	}
-
-	/**
-	 * @param column
-	 * @param value
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> in(String column, Object[] value) {
-
-		return in(null, column, value);
-	}
-
-	/**
-	 * @param alias
-	 * 		JPQL table alias
-	 * @param column
-	 * 		JPQL column name
-	 * @param values
-	 * 		value object
-	 * 		ignored if value is null.
-	 *
-	 * @return
-	 */
-	public TinyQuery<T> in(String alias, String column, Object[] values) {
-
-		boolean valid = validateParameters(values);
-		if(valid) {
-
-			if(StringUtils.isBlank(alias)) {
-				alias = this.tableAlias;
-			}
-			String parameterHolder = column.replace(".", "_") + "_" + suffix++;
-			ArrayList<String> list = new ArrayList<>();
-			for(int i = 0; i < values.length; i++) {
-
-				list.add(":" + parameterHolder + "_" + i);
-				namedParameters.put(parameterHolder + "_" + i, values[i]);
-			}
-			String valueString = StringUtils.join(list, ",");
-			currentClause.append(String.format("%s.%s IN (%s)", alias, column,
-					valueString));
-		}
-		postWhereClause(valid);
-		return this;
-	}
-
-	public TinyQuery<T> orderBy(String colunmn, OrderType orderType) {
-
-		return orderBy(null, colunmn, orderType);
+		return orderBy(null, column, orderType);
 	}
 
 	public TinyQuery<T> orderBy(String alias, String colunmn, OrderType orderType) {
@@ -771,7 +356,7 @@ public class TinyQuery<T> {
 	/**
 	 * Execute a SELECT query and return the query results as an List.
 	 *
-	 * @return a list of the results
+	 * @return a predicateList of the results
 	 */
 	public List<T> getResultList() {
 
@@ -799,7 +384,7 @@ public class TinyQuery<T> {
 	 * @param maxRow
 	 * 		maximum number of results to retrieve, null-safe
 	 *
-	 * @return a list of the results
+	 * @return a predicateList of the results
 	 *
 	 * @see javax.persistence.Query#setFirstResult(int)
 	 * @see javax.persistence.Query#setMaxResults(int)
@@ -820,11 +405,8 @@ public class TinyQuery<T> {
 	/**
 	 * @return jpa query
 	 */
-	private Query createQuery() {
+	protected Query createQuery() {
 
-		if(nextWhereClauseKeyword != null) {
-			throw new RuntimeException(nextWhereClauseKeyword + "is present but no clause found");
-		}
 		queryString.append(joinClause);
 		queryString.append(whereClause);
 		queryString.append(orderByClause);
@@ -843,42 +425,56 @@ public class TinyQuery<T> {
 		return query;
 	}
 
-	/**
-	 * @param valid
-	 */
-	private void postWhereClause(boolean valid) {
+	public String toString() {
 
-		if(valid) {
-			if(currentClause.length() > 0) {
-				if(isNotPresent) {
-					currentClause.insert(0, "NOT(");
-					currentClause.append(")");
-					isNotPresent = false;
-				}
-
-			}
-			currentClause.insert(0, whereClauseCount == 0 ? " WHERE " :
-					nextWhereClauseKeyword.contains("WHERE") ? " AND " :
-							nextWhereClauseKeyword.trim().equalsIgnoreCase("WHERE")
-									? " AND " : nextWhereClauseKeyword);
-
-			whereClause.append(currentClause);
-			whereClauseCount++;
-		}
-		nextWhereClauseKeyword = null;
-		currentClause.delete(0, currentClause.length());
+		StringBuilder buffer = new StringBuilder(queryString);
+		buffer.append(joinClause);
+		buffer.append(whereClause);
+		buffer.append(orderByClause);
+		buffer.append(groupByClause);
+		return buffer.toString();
 	}
 
-	private boolean validateParameters(Object... values) {
+	/**
+	 * format predicate into jpql expression and inject condition values into query
+	 *
+	 * @param predicate
+	 *
+	 * @return
+	 */
+	protected String formatPredicate(TinyPredicate predicate) {
 
-		boolean result = values != null && values.length > 0;
-		if(values != null) {
-			for(Object obj : values) {
-				result &= obj != null;
+		if(!predicate.isValid) {
+			if(ignoreNullParameter) {
+				return "";
+			} else {
+				throw new IllegalArgumentException(predicate.toString() + " is invalid");
 			}
 		}
-
-		return result;
+		ArrayList<String> list;
+		switch(predicate.predicateType) {
+			case SIMPLE:
+				return predicate.createExpression(this);
+			case AND:
+				list = new ArrayList<>();
+				for(TinyPredicate p : predicate.predicateList) {
+					String exp = formatPredicate(p);
+					if(StringUtils.isNotBlank(exp)) {
+						list.add(exp);
+					}
+				}
+				return "(" + StringUtils.join(list, " AND ") + ")";
+			case OR:
+				list = new ArrayList<>();
+				for(TinyPredicate p : predicate.predicateList) {
+					list.add(formatPredicate(p));
+				}
+				return "(" + StringUtils.join(list, " OR ") + ")";
+			case NOT:
+				return "(NOT " + formatPredicate(predicate.predicateList.get(0)) + ")";
+			default:
+				throw new IllegalArgumentException("Unknown predicate type");
+		}
 	}
 
 	/**
