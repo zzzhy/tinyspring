@@ -16,7 +16,7 @@ public abstract class AbstractSpringBean {
 	protected static Logger log;
 
 	@PostConstruct
-	protected void afterCreate() {
+	protected void postConstruct() {
 
 		log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 	}

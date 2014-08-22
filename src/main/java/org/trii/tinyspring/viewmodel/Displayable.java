@@ -1,7 +1,11 @@
-package org.trii.tinyspring.model;
+package org.trii.tinyspring.viewmodel;
 
 /**
- * Created with IntelliJ IDEA.
+ * Displayable is designed to wrap enumerated value and its human readable meaning together.<br>
+ * This is very convenient for the view layer as in view layer both text and value are required
+ * .<br>
+ * For projects with no i18n requirement the Displayable can take role of the interpreter by
+ * implementing <code>createText()</code>
  * User: Sebastian
  * Date: 2014/7/10
  * Time: 16:53

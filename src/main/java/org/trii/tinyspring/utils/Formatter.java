@@ -1,4 +1,4 @@
-package com.tinyspring.utils;
+package org.trii.tinyspring.utils;
 
 /**
  * Created with IntelliJ IDEA.

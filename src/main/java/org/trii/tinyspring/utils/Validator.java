@@ -1,9 +1,8 @@
-package com.tinyspring.utils;
+package org.trii.tinyspring.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Created with IntelliJ IDEA.
  * User: tian
  * Date: 14/2/14
  * Time: 15:19

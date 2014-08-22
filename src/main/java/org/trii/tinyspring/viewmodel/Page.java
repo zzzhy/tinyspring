@@ -1,25 +1,27 @@
-package org.trii.tinyspring.model;
+package org.trii.tinyspring.viewmodel;
 
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
+ * Page is designed to list of result as long as the result's pagination information<br>
  * User: Sebastian MA
  * Date: July 03, 2014
  * Time: 15:52
  */
 public class Page<T> {
 
+	private long pageNumber;
+
+	private long numberPerPage;
+
 	private long total;
 
 	private List<T> results;
 
-	public Page() {
+	public Page(List<T> results, long pageNumber, long numberPerPage, long total) {
 
-	}
-
-	public Page(List<T> results, long total) {
-
+		this.pageNumber = pageNumber;
+		this.numberPerPage = numberPerPage;
 		this.results = results;
 		this.total = total;
 	}
