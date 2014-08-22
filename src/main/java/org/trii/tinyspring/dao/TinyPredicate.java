@@ -561,4 +561,16 @@ public class TinyPredicate {
 
 		return String.format("Predicate[%s]", column);
 	}
+
+
+	/**
+	 *
+	 * @param parameter nullable
+	 *
+	 * @return
+	 */
+	public static String likeParameterContains(String parameter) {
+
+		return parameter == null ? null : "%" + parameter + "%";
+	}
 }
