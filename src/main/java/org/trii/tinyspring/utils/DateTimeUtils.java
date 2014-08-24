@@ -129,6 +129,23 @@ public class DateTimeUtils {
 		return new Timestamp(jodaTime.getMillis());
 	}
 
+	/**
+	 * returns a date representing today at 00:00:00
+	 *
+	 * @return the specific date
+	 */
+	public static Timestamp endOfDay() {
+
+		DateTime jodaTime = new DateTime(System.currentTimeMillis());
+		jodaTime = jodaTime
+				.hourOfDay().withMaximumValue()
+				.minuteOfHour().withMaximumValue()
+				.secondOfMinute().withMaximumValue();
+
+		jodaTime = jodaTime.plusDays(0);
+		return new Timestamp(jodaTime.getMillis());
+	}
+
 	public static Timestamp endOfDay(String dateString) {
 
 		DateTime jodaTime = new DateTime(dateString);
