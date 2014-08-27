@@ -23,4 +23,18 @@ public class Converter {
 		}
 		return result;
 	}
+
+	public static Integer[] toIntegerArray(String string, String separatorChars) {
+
+		return toIntegerArray(StringUtils.split(string, separatorChars));
+	}
+
+	public static Integer[] toIntegerArray(String[] array) {
+
+		Integer[] result = new Integer[array.length];
+		for(int i = 0; i < array.length; i++) {
+			result[i] = Integer.valueOf(array[i]);
+		}
+		return result;
+	}
 }
