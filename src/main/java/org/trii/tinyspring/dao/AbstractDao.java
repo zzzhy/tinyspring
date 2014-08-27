@@ -1,14 +1,11 @@
 package org.trii.tinyspring.dao;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.trii.tinyspring.AbstractSpringBean;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
-
-import static org.trii.tinyspring.dao.TinyPredicate.equal;
 
 /**
  * Created with IntelliJ IDEA.
@@ -68,23 +65,12 @@ public abstract class AbstractDao<T> extends AbstractSpringBean {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List getColumnValues(String targetColumn, String matchColumnList,
-	                            Object... valueList) {
+	public List getColumnValues(String targetColumn, TinyPredicate... predicates) {
 
 		String[] columnList = null;
-		if(StringUtils.isBlank(matchColumnList)) {
-
-		} else {
-			columnList = StringUtils.split(matchColumnList);
-			if(valueList.length != columnList.length) {
-				throw new IllegalArgumentException();
-			}
-		}
 		TinyQuery query = beginQuery().select(targetColumn);
-		if(columnList != null) {
-			for(int i = 0; i < columnList.length; i++) {
-				query.where(equal(columnList[i], valueList[i]));
-			}
+		if(predicates != null && predicates.length > 0) {
+			query.where(predicates);
 		}
 		query.groupBy(targetColumn);
 		return query.getUntypedResultList();
