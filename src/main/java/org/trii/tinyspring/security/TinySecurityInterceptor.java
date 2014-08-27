@@ -104,6 +104,7 @@ public class TinySecurityInterceptor extends HandlerInterceptorAdapter {
 								= (TinyUser) request.getSession().getAttribute(TinyAuthenticator
 								.SESSION_NAME_USER);
 						if(user == null) {
+							//TODO
 							request.setAttribute("roleDenied", true);
 							request.setAttribute("privilegeDenied", true);
 							RequestDispatcher rd = request.getRequestDispatcher(accessDeniedUrl);

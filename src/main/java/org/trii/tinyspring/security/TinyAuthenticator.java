@@ -23,7 +23,9 @@ public abstract class TinyAuthenticator extends AbstractSpringBean {
 
 	protected String loginFailureUrl;
 
-	public abstract String authenticate(HttpSession session, String username, String password);
+	public abstract AuthenticationResult authenticate(HttpSession session,
+	                                                  String username,
+	                                                  String password);
 
 
 	public void setLogoutSuccessUrl(String logoutSuccessUrl) {
@@ -46,6 +48,11 @@ public abstract class TinyAuthenticator extends AbstractSpringBean {
 		return loginSuccessUrl;
 	}
 
+	public String getLogoutSuccessUrl() {
+
+		return logoutSuccessUrl;
+	}
+
 	public void setLoginSuccessUrl(String loginSuccessUrl) {
 
 		this.loginSuccessUrl = loginSuccessUrl;
@@ -59,6 +66,52 @@ public abstract class TinyAuthenticator extends AbstractSpringBean {
 	public void setLoginFailureUrl(String loginFailureUrl) {
 
 		this.loginFailureUrl = loginFailureUrl;
+	}
+
+	public class AuthenticationResult {
+
+		protected boolean success;
+
+		protected String url;
+
+		protected TinyUser user;
+
+		public AuthenticationResult(TinyUser user, boolean success, String url) {
+
+			this.success = success;
+			this.url = url;
+			this.user = user;
+		}
+
+		public TinyUser getUser() {
+
+			return user;
+		}
+
+		public void setUser(TinyUser user) {
+
+			this.user = user;
+		}
+
+		public boolean isSuccess() {
+
+			return success;
+		}
+
+		public void setSuccess(boolean success) {
+
+			this.success = success;
+		}
+
+		public String getUrl() {
+
+			return url;
+		}
+
+		public void setUrl(String url) {
+
+			this.url = url;
+		}
 	}
 
 }
