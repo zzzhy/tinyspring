@@ -18,6 +18,6 @@ public class TestStopWatch {
 		stopWatch.mark();
 		Thread.sleep(200);
 		stopWatch.mark();
-		System.out.println(stopWatch.prettyPrint());
+		System.out.println(stopWatch.prettyString());
 	}
 }

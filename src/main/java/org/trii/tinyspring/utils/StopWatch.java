@@ -127,7 +127,7 @@ public class StopWatch {
 	 * Return a string with a table describing all tasks performed.
 	 * For custom reporting, call getTaskInfo() and use the task info directly.
 	 */
-	public String prettyPrint() {
+	public String prettyString() {
 
 		StringBuilder builder = new StringBuilder();
 		builder.append(String.format("StopWatch[%s]:\n", id));
@@ -139,6 +139,11 @@ public class StopWatch {
 		builder.append("Total time: ").append(getTotalTimeMillis()).append(" ms.");
 
 		return builder.toString();
+	}
+
+	public void prettyPrint() {
+
+		System.out.println(prettyString());
 	}
 
 
