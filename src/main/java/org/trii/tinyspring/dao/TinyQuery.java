@@ -104,6 +104,23 @@ public class TinyQuery<T> {
 	}
 
 	/**
+	 * Use ignoreNull() instead. This method is planned to be removed.
+	 *
+	 * @param ignored
+	 * 		whether null parameters should be ignored.
+	 *
+	 * @return the same TinyQuery instance
+	 *
+	 * @see org.trii.tinyspring.dao.TinyQuery#ignoreNull(boolean)
+	 */
+	@Deprecated
+	public TinyQuery<T> ignoreNullParameter(boolean ignored) {
+
+		this.ignoreNullParameter = ignored;
+		return this;
+	}
+
+	/**
 	 * Set whether null-valued parameters should be ignored.<br>
 	 * If set to TRUE, the predicates in WHERE clause with null-valued parameter will be ignored.
 	 * otherwise an IllegalArgumentException will be thrown.<br><br>
@@ -113,20 +130,21 @@ public class TinyQuery<T> {
 	 * ignored, the query will just find all the users. In this case set ignoreNullParameter to
 	 * FALSE to force throw an IllegalArgumentException while a null value is encountered.
 	 *
-	 * @param ignore
+	 * @param ignored
 	 * 		whether null parameters should be ignored.
 	 *
 	 * @return the same TinyQuery instance
 	 */
-	public TinyQuery<T> ignoreNullParameter(boolean ignore) {
+	public TinyQuery<T> ignoreNull(boolean ignored) {
 
-		this.ignoreNullParameter = ignore;
+		this.ignoreNullParameter = ignored;
 		return this;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	// BEGIN structural JPQL query
 	//
+
 	/**
 	 * Select the entity class managed by the query.
 	 *
