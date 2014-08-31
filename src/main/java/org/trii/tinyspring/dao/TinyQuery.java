@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
 /**
  * A tiny flexible JPQL query builder
  * User: Sebastian MA

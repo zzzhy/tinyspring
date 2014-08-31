@@ -23,6 +23,17 @@ public class DateTimeUtils {
 
 	private static DateTimeFormatter hourMinuteFormatter = DateTimeFormat.forPattern("HH:mm");
 
+
+	public static String format(DateTime time, String pattern) {
+
+		return DateTimeFormat.forPattern(pattern).print(time);
+	}
+
+	public static Timestamp timestamp(DateTime time) {
+
+		return new Timestamp(time.getMillis());
+	}
+
 	/**
 	 * formats date to HH:mm
 	 *
@@ -157,6 +168,16 @@ public class DateTimeUtils {
 		return new Timestamp(jodaTime.getMillis());
 	}
 
+	public static Timestamp endOfDay(Date time) {
+
+		DateTime jodaTime = new DateTime(time.getTime());
+		jodaTime = jodaTime
+				.hourOfDay().withMaximumValue()
+				.minuteOfHour().withMaximumValue()
+				.secondOfMinute().withMaximumValue();
+		return new Timestamp(jodaTime.getMillis());
+	}
+
 	public static Timestamp endOfDay(Date time, int offset) {
 
 		DateTime jodaTime = new DateTime(time.getTime());
@@ -168,6 +189,19 @@ public class DateTimeUtils {
 		return new Timestamp(jodaTime.getMillis());
 	}
 
+	/**
+	 * Return the beginning of that month
+	 *
+	 * @param year
+	 * 		the year
+	 * @param month
+	 * 		the month
+	 * @param offset
+	 * 		the offset in month. positive value moves the result later than the time
+	 * 		point. negative value moves the result earlier.
+	 *
+	 * @return the corresponding timestamp
+	 */
 	public static Timestamp beginOfMonth(int year, int month, int offset) {
 
 		return new Timestamp(
@@ -184,9 +218,21 @@ public class DateTimeUtils {
 		);
 	}
 
-	public static Date endOfMonth(int year, int month, int offset) {
+	/**
+	 * Return the end of that month
+	 *
+	 * @param year
+	 * 		the year
+	 * @param month
+	 * 		the month
+	 * @param offset
+	 * 		the offset in month. positive value for months after the current time point.
+	 *
+	 * @return the corresponding timestamp
+	 */
+	public static Timestamp endOfMonth(int year, int month, int offset) {
 
-		return new MutableDateTime()
+		return new Timestamp(new MutableDateTime()
 				.year().set(year)
 				.monthOfYear().set(month)
 				.toDateTime()
@@ -196,7 +242,7 @@ public class DateTimeUtils {
 				.secondOfMinute().withMaximumValue()
 				.millisOfSecond().withMaximumValue()
 				.plusMonths(offset)
-				.toDate();
+				.getMillis());
 	}
 
 	public static Timestamp now() {
@@ -206,6 +252,6 @@ public class DateTimeUtils {
 
 	public static Timestamp parse(String time) {
 
-		return new Timestamp(DateTime.parse(time).toDate().getTime());
+		return new Timestamp(DateTime.parse(time).getMillis());
 	}
 }
