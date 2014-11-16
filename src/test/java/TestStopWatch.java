@@ -1,4 +1,4 @@
-import org.trii.tinyspring.utils.StopWatch;
+import org.triiskelion.tinyspring.utils.StopWatch;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,12 +12,15 @@ public class TestStopWatch {
 	public static void main(String... args) throws InterruptedException {
 
 		StopWatch stopWatch = new StopWatch("test").start();
-		Thread.sleep(500);
-		stopWatch.mark();
-		Thread.sleep(300);
-		stopWatch.mark();
+
 		Thread.sleep(200);
 		stopWatch.mark();
-		System.out.println(stopWatch.prettyString());
+		stopWatch.beginLoop("loop");
+		for(int i = 0; i < 10; i++) {
+			Thread.sleep((long) (Math.random()*500));
+			stopWatch.markLoop();
+		}
+		stopWatch.endLoop();
+		stopWatch.prettyPrint();
 	}
 }

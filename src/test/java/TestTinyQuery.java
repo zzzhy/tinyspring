@@ -1,6 +1,6 @@
-import org.trii.tinyspring.dao.TinyQuery;
+import org.triiskelion.tinyspring.dao.TinyQuery;
 
-import static org.trii.tinyspring.dao.TinyPredicate.*;
+import static org.triiskelion.tinyspring.dao.TinyPredicate.*;
 
 /**
  * Created with IntelliJ IDEA.
