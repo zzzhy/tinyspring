@@ -96,8 +96,6 @@ public class TinyQuery<T> {
 	 */
 	protected boolean showJpql = true;
 
-	private boolean count = false;
-
 
 	public TinyQuery(EntityManager entityManager, Class<T> entityClass) {
 
@@ -299,8 +297,11 @@ public class TinyQuery<T> {
 			return this;
 		}
 
-		whereClause.append(whereClause.length() == 0 ? " WHERE " : " AND ")
-		           .append(formatPredicate(TinyPredicate.and(predicates)));
+		TinyPredicate merged = TinyPredicate.and(predicates);
+		if(!merged.empty) {
+			whereClause.append(whereClause.length() == 0 ? " WHERE " : " AND ")
+			           .append(formatPredicate(merged));
+		}
 		return this;
 	}
 
@@ -314,10 +315,12 @@ public class TinyQuery<T> {
 	 */
 	public TinyQuery<T> or(TinyPredicate... predicates) {
 
-		TinyPredicate f = TinyPredicate.and(predicates);
 
-		whereClause.append(whereClause.length() == 0 ? " WHERE " : " OR ").append(formatPredicate
-				(f));
+		TinyPredicate merged = TinyPredicate.and(predicates);
+		if(!merged.empty) {
+			whereClause.append(whereClause.length() == 0 ? " WHERE " : " OR ")
+			           .append(formatPredicate(merged));
+		}
 		return this;
 	}
 
@@ -486,8 +489,7 @@ public class TinyQuery<T> {
 	 */
 	public long count() {
 
-		count = true;
-		Query query = createQuery();
+		Query query = createQuery(true);
 		return (long) query.getSingleResult();
 	}
 
@@ -508,11 +510,7 @@ public class TinyQuery<T> {
 	 */
 	public boolean hasResult() {
 
-		selectClause.delete(0, selectClause.length());
-		selectClause.append(
-				String.format("SELECT count(%s) FROM %s %s",
-						tableAlias, entityClass.getCanonicalName(), tableAlias));
-		Query query = createQuery();
+		Query query = createQuery(true);
 		return (long) query.getSingleResult() != 0;
 	}
 
@@ -625,12 +623,17 @@ public class TinyQuery<T> {
 	// BEGIN Internal methods
 	//
 
+	protected Query createQuery() {
+
+		return createQuery(false);
+	}
+
 	/**
 	 * Create JPA query
 	 *
 	 * @return JPA Query object
 	 */
-	protected Query createQuery() {
+	protected Query createQuery(boolean count) {
 
 		StringBuilder queryString = new StringBuilder();
 

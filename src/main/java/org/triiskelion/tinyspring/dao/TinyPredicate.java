@@ -35,6 +35,8 @@ public class TinyPredicate {
 	 */
 	protected boolean isValid = true;
 
+	protected boolean empty = true;
+
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	// construction methods
@@ -65,6 +67,7 @@ public class TinyPredicate {
 	protected TinyPredicate(String alias, String column, Operator operator, Object... values) {
 
 		isValid = validateParameters(operator, values);
+		empty = !isValid;
 
 		if(StringUtils.isBlank(alias)) {
 			alias = TinyQuery.tableAlias;
@@ -386,7 +389,7 @@ public class TinyPredicate {
 		}
 		TinyPredicate result = TinyPredicate.createPredicate(PredicateType.AND);
 		for(TinyPredicate p : predicates) {
-
+			result.empty |= p.empty;
 			if(p.predicateType == PredicateType.AND) {
 				result.predicateList.addAll(p.predicateList);
 			} else {
@@ -413,7 +416,7 @@ public class TinyPredicate {
 		}
 		TinyPredicate result = TinyPredicate.createPredicate(PredicateType.OR);
 		for(TinyPredicate p : predicates) {
-
+			result.empty |= p.empty;
 			if(p.predicateType == PredicateType.OR) {
 				result.predicateList.addAll(p.predicateList);
 			} else {
@@ -430,6 +433,7 @@ public class TinyPredicate {
 		}
 
 		TinyPredicate result = TinyPredicate.createPredicate(PredicateType.NOT);
+		result.empty = predicate.empty;
 		result.predicateList.add(predicate);
 		return result;
 	}
