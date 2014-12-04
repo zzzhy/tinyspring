@@ -1,4 +1,4 @@
-import org.triiskelion.tinyspring.utils.StopWatch;
+import org.triiskelion.tinyutils.StopWatch;
 
 /**
  * Created with IntelliJ IDEA.

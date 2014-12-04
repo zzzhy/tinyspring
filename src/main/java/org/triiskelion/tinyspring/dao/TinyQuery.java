@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.triiskelion.tinyspring.viewmodel.Page;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -96,6 +97,11 @@ public class TinyQuery<T> {
 	 */
 	protected boolean showJpql = true;
 
+	private Integer page;
+
+	private Integer numberPerPage;
+
+	private boolean paged = false;
 
 	public TinyQuery(EntityManager entityManager, Class<T> entityClass) {
 
@@ -558,6 +564,9 @@ public class TinyQuery<T> {
 		if(page != null && numberPerPage != null) {
 			startRow = (page - 1) * numberPerPage;
 			maxRow = numberPerPage;
+			this.page = page;
+			this.numberPerPage = numberPerPage;
+			this.paged = true;
 		}
 		return this;
 	}
@@ -597,6 +606,20 @@ public class TinyQuery<T> {
 			query.setFirstResult(startRow).setMaxResults(maxRow);
 		}
 		return (List<T>) query.getResultList();
+	}
+
+	/**
+	 * @return wrapped Page object.
+	 */
+	public Page<T> getPagedResult() {
+
+		if(paged) {
+			long total = count();
+			List<T> result = getResultList();
+			return new Page<>(result, page, numberPerPage, total);
+		} else {
+			throw new IllegalStateException("Query is not paged. call page() first.");
+		}
 	}
 
 	/**
@@ -655,7 +678,7 @@ public class TinyQuery<T> {
 		queryString.append(orderByClause);
 		queryString.append(groupByClause);
 		if(showJpql) {
-			log.debug("Query built: " + queryString);
+			log.info("Query built: " + queryString);
 		}
 		Query query = entityManager.createQuery(queryString.toString());
 

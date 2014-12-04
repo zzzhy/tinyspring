@@ -22,6 +22,16 @@ public class Page<T> {
 
 	private List<T> data;
 
+	/**
+	 * @param data
+	 * 		data of the current page
+	 * @param page
+	 * 		current page number
+	 * @param max
+	 * 		max items per page
+	 * @param total
+	 * 		total items number
+	 */
 	public Page(List<T> data, long page, long max, long total) {
 
 		this.page = page;
@@ -37,58 +47,34 @@ public class Page<T> {
 		return totalPage;
 	}
 
-	public void setTotalPage(long totalPage) {
-
-		this.totalPage = totalPage;
-	}
 
 	public long getDataSize() {
 
 		return dataSize;
 	}
 
-	public void setDataSize(long dataSize) {
-
-		this.dataSize = dataSize;
-	}
 
 	public long getPage() {
 
 		return page;
 	}
 
-	public void setPage(long page) {
-
-		this.page = page;
-	}
 
 	public long getMax() {
 
 		return max;
 	}
 
-	public void setMax(long max) {
-
-		this.max = max;
-	}
 
 	public long getTotal() {
 
 		return total;
 	}
 
-	public void setTotal(long total) {
-
-		this.total = total;
-	}
 
 	public List<T> getData() {
 
 		return data;
 	}
 
-	public void setData(List<T> data) {
-
-		this.data = data;
-	}
 }

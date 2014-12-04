@@ -64,7 +64,29 @@ public class TinyPredicate {
 	 * @param operator
 	 * @param values
 	 */
-	protected TinyPredicate(String alias, String column, Operator operator, Object... values) {
+	//	protected TinyPredicate(String alias, String column, Operator operator, Object... values) {
+	//
+	//		isValid = validateParameters(operator, values);
+	//		empty = !isValid;
+	//
+	//		if(StringUtils.isBlank(alias)) {
+	//			alias = TinyQuery.tableAlias;
+	//		}
+	//
+	//		this.operator = operator;
+	//		this.column = String.format("%s.%s", alias, column);
+	//		Lists.addAll(this.values, values);
+	//	}
+
+	/**
+	 * Creates a simple predicate
+	 *
+	 * @param alias
+	 * @param column
+	 * @param operator
+	 * @param values
+	 */
+	protected TinyPredicate(String alias, String column, Operator operator, List values) {
 
 		isValid = validateParameters(operator, values);
 		empty = !isValid;
@@ -75,7 +97,7 @@ public class TinyPredicate {
 
 		this.operator = operator;
 		this.column = String.format("%s.%s", alias, column);
-		Collections.addAll(this.values, values);
+		this.values.addAll(values);
 	}
 
 
@@ -121,7 +143,7 @@ public class TinyPredicate {
 
 	public static TinyPredicate isNull(String alias, String column) {
 
-		return new TinyPredicate(alias, column, Operator.isNull);
+		return new TinyPredicate(alias, column, Operator.isNull, listOf());
 	}
 
 	public static TinyPredicate isNotNull(String column) {
@@ -131,7 +153,7 @@ public class TinyPredicate {
 
 	public static TinyPredicate isNotNull(String alias, String column) {
 
-		return new TinyPredicate(alias, column, Operator.isNotNull);
+		return new TinyPredicate(alias, column, Operator.isNotNull, listOf());
 	}
 
 	/**
@@ -158,7 +180,7 @@ public class TinyPredicate {
 	 */
 	public static TinyPredicate equal(String alias, String column, Object value) {
 
-		return new TinyPredicate(alias, column, Operator.equal, value);
+		return new TinyPredicate(alias, column, Operator.equal, listOf(value));
 	}
 
 	/**
@@ -185,7 +207,7 @@ public class TinyPredicate {
 	 */
 	public static TinyPredicate notEqual(String alias, String column, Object value) {
 
-		return new TinyPredicate(alias, column, Operator.notEqual, value);
+		return new TinyPredicate(alias, column, Operator.notEqual, listOf(value));
 	}
 
 	/**
@@ -212,7 +234,7 @@ public class TinyPredicate {
 	 */
 	public static TinyPredicate lessThan(String alias, String column, Object value) {
 
-		return new TinyPredicate(alias, column, Operator.lessThan, value);
+		return new TinyPredicate(alias, column, Operator.lessThan, listOf(value));
 	}
 
 	/**
@@ -239,7 +261,7 @@ public class TinyPredicate {
 	 */
 	public static TinyPredicate lessThanOrEqual(String alias, String column, Object value) {
 
-		return new TinyPredicate(alias, column, Operator.lessThanOrEqual, value);
+		return new TinyPredicate(alias, column, Operator.lessThanOrEqual, listOf(value));
 	}
 
 	/**
@@ -266,7 +288,7 @@ public class TinyPredicate {
 	 */
 	public static TinyPredicate greaterThan(String alias, String column, Object value) {
 
-		return new TinyPredicate(alias, column, Operator.greaterThan, value);
+		return new TinyPredicate(alias, column, Operator.greaterThan, listOf(value));
 	}
 
 	/**
@@ -293,7 +315,7 @@ public class TinyPredicate {
 	 */
 	public static TinyPredicate greaterThanOrEqual(String alias, String column, Object value) {
 
-		return new TinyPredicate(alias, column, Operator.greaterThanOrEqual, value);
+		return new TinyPredicate(alias, column, Operator.greaterThanOrEqual, listOf(value));
 	}
 
 	/**
@@ -320,7 +342,7 @@ public class TinyPredicate {
 	 */
 	public static TinyPredicate like(String alias, String column, Object value) {
 
-		return new TinyPredicate(alias, column, Operator.like, value);
+		return new TinyPredicate(alias, column, Operator.like, listOf(value));
 	}
 
 	/**
@@ -344,7 +366,8 @@ public class TinyPredicate {
 	public static TinyPredicate between(String alias, String column, Object startValue,
 	                                    Object endValue) {
 
-		return new TinyPredicate(alias, column, Operator.between, startValue, endValue);
+		return new TinyPredicate(alias, column, Operator.between, listOf(startValue,
+				endValue));
 	}
 
 	/**
@@ -352,7 +375,11 @@ public class TinyPredicate {
 	 *
 	 * @return
 	 */
-	public static TinyPredicate in(String column, Object... values) {
+	//	public static TinyPredicate in(String column, Object... values) {
+	//
+	//		return in(null, column, values);
+	//	}
+	public static TinyPredicate in(String column, List values) {
 
 		return in(null, column, values);
 	}
@@ -365,7 +392,11 @@ public class TinyPredicate {
 	 *
 	 * @return
 	 */
-	public static TinyPredicate in(String alias, String column, Object... values) {
+	//	public static TinyPredicate in(String alias, String column, Object... values) {
+	//
+	//		return new TinyPredicate(alias, column, Operator.in, values);
+	//	}
+	public static TinyPredicate in(String alias, String column, List values) {
 
 		return new TinyPredicate(alias, column, Operator.in, values);
 	}
@@ -449,7 +480,7 @@ public class TinyPredicate {
 	 *
 	 * @return
 	 */
-	protected static boolean validateParameters(Operator type, Object... values) {
+	protected static boolean validateParameters(Operator type, List values) {
 
 		switch(type) {
 			case isNull:
@@ -462,13 +493,13 @@ public class TinyPredicate {
 			case greaterThan:
 			case greaterThanOrEqual:
 			case like:
-				return values != null && values.length >= 1
-						&& values[0] != null;
+				return values != null && values.size() >= 1
+						&& values.get(0) != null;
 			case between:
-				return values != null && values.length >= 2
-						&& values[0] != null && values[1] != null;
+				return values != null && values.size() >= 2
+						&& values.get(0) != null && values.get(1) != null;
 			case in:
-				boolean result = values != null && values.length >= 1;
+				boolean result = values != null && values.size() >= 1;
 				if(values != null) {
 					for(Object obj : values) {
 						result &= obj != null;
@@ -562,7 +593,7 @@ public class TinyPredicate {
 					query.namedParameters.put(valueHolder, value);
 				}
 				query.index++;
-				buffer.append(StringUtils.join(list, ","));
+				buffer.append("(").append(StringUtils.join(list, ",")).append(")");
 				break;
 
 			default:
@@ -606,5 +637,12 @@ public class TinyPredicate {
 	public static String likeParameterContains(String parameter) {
 
 		return parameter == null ? null : "%" + parameter + "%";
+	}
+
+	public static List listOf(Object... objects) {
+
+		List result = new ArrayList();
+		Collections.addAll(result, objects);
+		return result;
 	}
 }

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.triiskelion</groupId>
     <artifactId>tinyspring</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.6.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>TinySpring</name>
     <description>Set of tools for spring-mvc projects</description>
@@ -105,7 +105,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>18.0-rc2</version>
+            <version>18.0</version>
         </dependency>
         <!-- BEGIN JavaEE -->
         <dependency>
@@ -122,9 +122,9 @@
         </dependency>
         <dependency>
             <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.0-api</artifactId>
-            <version>1.0.1.Final</version>
-            <scope>provided</scope>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
+            <version>1.0.0.Final</version>
+            <scope>provided,test</scope>
         </dependency>
         <!-- END JavaEE -->
 
@@ -168,30 +168,60 @@
         <!-- END fastjson -->
 
         <!-- BEGIN Logging -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j.adapters</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.0-beta4</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.0-rc1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.0-rc1</version>
-            <scope>test</scope>
-        </dependency>
+        <!--  <dependency>
+              <groupId>org.slf4j</groupId>
+              <artifactId>slf4j-api</artifactId>
+              <version>1.7.7</version>
+          </dependency>
+          <dependency>
+              <groupId>org.apache.logging.log4j.adapters</groupId>
+              <artifactId>log4j-slf4j-impl</artifactId>
+              <version>2.0-beta4</version>
+              <scope>test</scope>
+          </dependency>
+          <dependency>
+              <groupId>org.apache.logging.log4j</groupId>
+              <artifactId>log4j-api</artifactId>
+              <version>2.0-rc1</version>
+              <scope>test</scope>
+          </dependency>
+          <dependency>
+              <groupId>org.apache.logging.log4j</groupId>
+              <artifactId>log4j-core</artifactId>
+              <version>2.0-rc1</version>
+              <scope>test</scope>
+          </dependency>-->
         <!-- END Logging -->
+
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>2.3.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- BEGIN JPA 2.0 Hibernate provider -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>4.3.6.Final</version>
+            <!--<exclusions>-->
+            <!--<exclusion>-->
+            <!--<artifactId>jboss-logging</artifactId>-->
+            <!--<groupId>org.jboss.logging</groupId>-->
+            <!--</exclusion>-->
+            <!--</exclusions>-->
+            <scope>test</scope>
+        </dependency>
+        <!-- END JPA 2.0 Hibernate provider -->
+
 
     </dependencies>
 
@@ -228,13 +258,14 @@
 
     <!-- Maven repo by sonatype -->
     <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
         <repository>
             <id>ossrh</id>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
     </distributionManagement>
+
 </project>
