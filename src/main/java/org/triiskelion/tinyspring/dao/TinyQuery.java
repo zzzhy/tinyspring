@@ -175,6 +175,13 @@ public class TinyQuery<T> {
 	////////////////////////////////////////////////////////////////////////////////////////
 	// BEGIN structural JPQL query
 	//
+	public TinyQuery<T> delete() {
+
+		selectClause.append(String.format("DELETE FROM %s %s",
+				entityClass.getCanonicalName(), tableAlias));
+
+		return this;
+	}
 
 	/**
 	 * Select the entity class managed by the query.
@@ -189,13 +196,6 @@ public class TinyQuery<T> {
 		return this;
 	}
 
-	public TinyQuery<T> delete() {
-
-		selectClause.append(String.format("DELETE FROM %s %s",
-				entityClass.getCanonicalName(), tableAlias));
-
-		return this;
-	}
 
 	/**
 	 * Select specific columns, the result must be retrieved by <code>getUntypedResultList()
@@ -226,7 +226,7 @@ public class TinyQuery<T> {
 
 	/**
 	 * Distinguish the result. This will add DISTINCT keyword to the query. Can be invoked
-	 * anytime before retrieving the result.
+	 * anywhere before retrieving the result.
 	 *
 	 * @return the same TinyQuery instance
 	 */
@@ -239,7 +239,7 @@ public class TinyQuery<T> {
 
 	/**
 	 * Add additional entity to FROM clause besides the entity  which the invoking DAO object
-	 * represents. must invoke after select().
+	 * represents. must use after select().
 	 *
 	 * @param entityClass
 	 * 		entity class
@@ -313,23 +313,6 @@ public class TinyQuery<T> {
 		return this;
 	}
 
-	/**
-	 * Check if predicates are all valid and throw an IllegalArguemntException
-	 * if ignoreNullParameter is set to TRUE.
-	 *
-	 * @param predicates
-	 */
-	private void checkPredicates(TinyPredicate[] predicates) {
-
-		if(!ignoreNullParameter) {
-			for(TinyPredicate p : predicates) {
-				if(!p.isValid) {
-					throw new IllegalArgumentException("Predicate for field:" + p.column + " is " +
-							"invalid. Check values");
-				}
-			}
-		}
-	}
 
 	/**
 	 * Combine the predicates by OR with the previous predicates.
@@ -414,7 +397,7 @@ public class TinyQuery<T> {
 	}
 
 	/**
-	 * Add ORDER BY clause for the columns from joined tables. Multiple invocation will be added
+	 * Add GROUP BY clause for the columns from joined tables. Multiple invocation will be added
 	 * successively.
 	 *
 	 * @param alias
@@ -776,6 +759,24 @@ public class TinyQuery<T> {
 				return "(NOT " + formatPredicate(predicate.predicateList.get(0)) + ")";
 			default:
 				throw new IllegalArgumentException("Unknown predicate type");
+		}
+	}
+
+	/**
+	 * Check if predicates are all valid and throw an IllegalArguemntException
+	 * if ignoreNullParameter is set to TRUE.
+	 *
+	 * @param predicates
+	 */
+	private void checkPredicates(TinyPredicate[] predicates) {
+
+		if(!ignoreNullParameter) {
+			for(TinyPredicate p : predicates) {
+				if(!p.isValid) {
+					throw new IllegalArgumentException("Predicate for field:" + p.column + " is " +
+							"invalid. Check values");
+				}
+			}
 		}
 	}
 	//

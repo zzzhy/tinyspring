@@ -35,7 +35,7 @@ public class TinyPredicate {
 	 */
 	protected boolean isValid = true;
 
-	protected boolean empty = true;
+	protected boolean empty = false;
 
 
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -625,7 +625,7 @@ public class TinyPredicate {
 
 	public String toString() {
 
-		return String.format("Predicate[%s]", column);
+		return String.format("Predicate[%s]", column != null ? column : predicateType);
 	}
 
 
