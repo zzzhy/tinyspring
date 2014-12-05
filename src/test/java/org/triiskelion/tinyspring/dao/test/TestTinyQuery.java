@@ -38,9 +38,11 @@ public class TestTinyQuery {
 
 
 		entityManager.getTransaction().begin();
-		for(String name : names) {
+		for(int i = 0; i < names.length; i++) {
 			DummyEntity entity = new DummyEntity();
-			entity.setName(name);
+			entity.setName(names[i]);
+			entity.setSort(i);
+
 			entityManager.persist(entity);
 		}
 		entityManager.getTransaction().commit();
@@ -70,7 +72,7 @@ public class TestTinyQuery {
 	}
 
 	@Test
-	public void testIn() {
+	public void testPredicateIn() {
 
 		TinyQuery<DummyEntity> query = new TinyQuery<>(entityManager, DummyEntity.class, true);
 

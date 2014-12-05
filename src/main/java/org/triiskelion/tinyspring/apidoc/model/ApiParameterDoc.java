@@ -1,6 +1,7 @@
 package org.triiskelion.tinyspring.apidoc.model;
 
 
+import com.google.common.reflect.Parameter;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -8,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.triiskelion.tinyspring.apidoc.annotation.ApiParam;
 import org.triiskelion.tinyutils.BeanUtils;
 
-import java.lang.reflect.Parameter;
-import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -77,14 +76,14 @@ public class ApiParameterDoc {
 
 		if(headerAnno != null) {
 			doc.setParamType(ApiParameterType.HEADER);
-			doc.setName(!headerAnno.value().equals("") ? headerAnno.value() : parameter.getName());
+			doc.setName(!headerAnno.value().equals("") ? headerAnno.value() : parameter.toString());
 			doc.setRequired(headerAnno.required());
 			doc.setDefaultValue(headerAnno.defaultValue());
 
 		} else if(pathAnno != null) {
 
 			doc.setParamType(ApiParameterType.PATH);
-			doc.setName(!pathAnno.value().equals("") ? pathAnno.value() : parameter.getName());
+			doc.setName(!pathAnno.value().equals("") ? pathAnno.value() : parameter.toString());
 
 		} else if(paramAnno != null) {
 
@@ -109,14 +108,13 @@ public class ApiParameterDoc {
 			doc.setFormat(myAnno.format());
 		}
 		if(parameter.getType().isArray()) {
-			doc.setType(parameter.getType().getComponentType().getSimpleName());
+			doc.setType(parameter.getType().getComponentType().toString());
 			doc.allowMultipleValues = true;
-		} else if(Collection.class.isAssignableFrom(parameter.getType())) {
+
+		} else if(Collection.class.isAssignableFrom(parameter.getType().getRawType())) {
 
 			doc.allowMultipleValues = true;
-			Class c
-					= (Class) ((ParameterizedType) parameter.getParameterizedType())
-					.getActualTypeArguments()[0];
+			Class c = parameter.getType().getComponentType().getRawType();
 			doc.setType(c.getSimpleName());
 		}
 		return doc;

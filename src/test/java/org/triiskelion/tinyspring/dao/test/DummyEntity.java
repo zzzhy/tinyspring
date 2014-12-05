@@ -19,6 +19,18 @@ public class DummyEntity {
 	@Column
 	private String name;
 
+	@Column
+	private Integer sort;
+
+	public Integer getSort() {
+
+		return sort;
+	}
+
+	public void setSort(Integer sort) {
+
+		this.sort = sort;
+	}
 
 	public int getId() {
 

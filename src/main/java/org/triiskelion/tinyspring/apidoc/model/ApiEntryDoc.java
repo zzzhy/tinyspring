@@ -1,5 +1,7 @@
 package org.triiskelion.tinyspring.apidoc.model;
 
+import com.google.common.reflect.Invokable;
+import com.google.common.reflect.Parameter;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.triiskelion.tinyspring.apidoc.Utils;
@@ -7,7 +9,6 @@ import org.triiskelion.tinyspring.apidoc.annotation.ApiEntry;
 import org.triiskelion.tinyutils.BeanUtils;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class ApiEntryDoc {
 		doc.consumes = mvcAnnotation.consumes();
 		doc.headers = mvcAnnotation.headers();
 
-		for(Parameter parameter : method.getParameters()) {
+		for(Parameter parameter : Invokable.from(method).getParameters()) {
 			ApiParameterDoc parameterDoc = ApiParameterDoc.create(parameter);
 			if(parameterDoc != null) {
 				switch(parameterDoc.getParamType()) {
