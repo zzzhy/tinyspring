@@ -61,7 +61,7 @@ If you wish to authenticate user 'bob' with password '123456':
 All three syntax are valid.
 
 
-If your query is very complex or you are JPQL export and you wish to write your JPQL directly:
+If your query is very complex or you are JPQL expert and you wish to write your JPQL directly:
 
     List<User> resultList = userDao.begeinQuery()
                                    .query("SELECT m FROM User m WHERE m.signInTime BETWEEN :a AND :b")
