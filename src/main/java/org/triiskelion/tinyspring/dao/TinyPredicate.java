@@ -415,6 +415,7 @@ public class TinyPredicate {
 		if(predicates == null || predicates.length == 0) {
 			throw new IllegalArgumentException("operation 'AND' requires at least 1 predicate");
 		}
+
 		if(predicates.length == 1) {
 			return predicates[0];
 		}

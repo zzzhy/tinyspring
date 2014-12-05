@@ -303,12 +303,32 @@ public class TinyQuery<T> {
 			return this;
 		}
 
+		checkPredicates(predicates);
+
 		TinyPredicate merged = TinyPredicate.and(predicates);
 		if(!merged.empty) {
 			whereClause.append(whereClause.length() == 0 ? " WHERE " : " AND ")
 			           .append(formatPredicate(merged));
 		}
 		return this;
+	}
+
+	/**
+	 * Check if predicates are all valid and throw an IllegalArguemntException
+	 * if ignoreNullParameter is set to TRUE.
+	 *
+	 * @param predicates
+	 */
+	private void checkPredicates(TinyPredicate[] predicates) {
+
+		if(!ignoreNullParameter) {
+			for(TinyPredicate p : predicates) {
+				if(!p.isValid) {
+					throw new IllegalArgumentException("Predicate for field:" + p.column + " is " +
+							"invalid. Check values");
+				}
+			}
+		}
 	}
 
 	/**
@@ -321,6 +341,11 @@ public class TinyQuery<T> {
 	 */
 	public TinyQuery<T> or(TinyPredicate... predicates) {
 
+		if(predicates == null || predicates.length == 0) {
+			return this;
+		}
+
+		checkPredicates(predicates);
 
 		TinyPredicate merged = TinyPredicate.and(predicates);
 		if(!merged.empty) {

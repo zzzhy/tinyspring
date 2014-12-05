@@ -13,8 +13,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.List;
 
-import static org.triiskelion.tinyspring.dao.TinyPredicate.in;
-import static org.triiskelion.tinyspring.dao.TinyPredicate.listOf;
+import static org.triiskelion.tinyspring.dao.TinyPredicate.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -46,6 +45,24 @@ public class TestTinyQuery {
 			entityManager.persist(entity);
 		}
 		entityManager.getTransaction().commit();
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testIgnoreNull() {
+
+		TinyQuery<DummyEntity> query;
+		query = new TinyQuery<>(entityManager, DummyEntity.class, true);
+
+		// where clause will be ignored thus query is as same as count all.
+		long result = query.ignoreNull(true).select()
+		                   .where(equal("name", null))
+		                   .count();
+		Assert.assertEquals(names.length, result);
+
+		// this should throw an IllegalArgumentException
+		result = query.ignoreNull(false).select()
+		              .where(equal("name", null))
+		              .count();
 	}
 
 	@Test
