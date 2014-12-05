@@ -37,7 +37,7 @@ Here's some examples:
 
 If you wish to query from User with username 'bob':
 
-    import static org.trii.tinyspring.dao.TinyPredicate.equal;
+    import static org.triiskelion.tinyspring.dao.TinyPredicate.equal;
     
     User result = userDao.beginQuery().select()
                        .where(equal("username", "bob"))
